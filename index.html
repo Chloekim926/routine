@@ -149,19 +149,20 @@ function render(){
           html+='<div class="member-row" onclick="S.selId=\''+m.id+'\';S.modal=\'detail\';render()"><div style="display:flex;align-items:center"><span class="rank-circle" style="background:'+(rk<=3?NAVY:"#E8E7F0")+';color:'+(rk<=3?"#fff":"#64748B")+';margin-right:10px">'+rk+'</span><div style="flex:1"><span style="font-weight:600;font-size:14px;color:'+NAVY+'">'+esc(m.name)+'</span>'+(m.nickname?'<span style="font-size:11px;color:'+MID+';margin-left:6px">'+esc(m.nickname)+'</span>':'')+'</div><div style="text-align:right"><div style="font-weight:900;color:'+NAVY+';font-size:17px">'+pct(m.stats.overallRate)+'</div><div style="font-size:10px;color:'+MID+'">'+m.stats.totalAchieved+'/'+m.stats.totalTarget+'회</div></div></div></div>'});
         html+='</div>'});
     } else {
-      // ── Pre-operation: show name / nickname / motto list ──
+      // ── Pre-operation: show name / nickname / motto ──
       html+='<div class="card-flush">';
       html+='<div style="padding:10px 14px;background:#F8F9FC;border-bottom:1px solid #E8E7F0"><span style="font-weight:700;font-size:14px;color:'+NAVY+'">13기 멤버</span><span style="font-size:11px;color:'+MID+';margin-left:8px">'+D.members.length+'명</span></div>';
       mws.forEach((m,i)=>{
         html+='<div class="member-row" onclick="S.selId=\''+m.id+'\';S.modal=\'detail\';render()"'+(i>0?' style="border-top:1px solid #F8F9FC"':'')+'>';
-        html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:'+(m.motto?'4':'0')+'px">';
+        html+='<div style="display:flex;align-items:center">';
+        html+='<span class="rank-circle" style="background:'+NAVY+';color:#fff;margin-right:10px">'+(i+1)+'</span>';
+        html+='<div style="flex:1">';
+        html+='<div style="display:flex;align-items:center;gap:6px">';
         html+='<span style="font-weight:700;font-size:14px;color:'+NAVY+'">'+esc(m.name)+'</span>';
         if(m.nickname)html+='<span style="font-size:12px;color:'+MID+'">'+esc(m.nickname)+'</span>';
         html+='</div>';
-        if(m.motto)html+='<div style="font-size:12px;color:#64748B;line-height:1.4;padding-left:2px">'+esc(m.motto)+'</div>';
-        // Show goals as tags
-        if(m.goals.length)html+='<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">'+m.goals.map(g=>'<span class="goal-tag">'+goalLabel(g)+'</span>').join('')+'</div>';
-        html+='</div>'});
+        if(m.motto)html+='<div style="font-size:12px;color:#64748B;line-height:1.4;margin-top:2px">'+esc(m.motto)+'</div>';
+        html+='</div></div></div>'});
       html+='</div>';
     }
     // Goal word cloud
