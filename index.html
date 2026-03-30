@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>바른생활루틴이들</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;max-width:480px;margin:0 auto;min-height:100vh;background:#F8F9FC;color:#1E1B4B}
+button{font-family:inherit}
+input{font-family:inherit}
+::-webkit-scrollbar{display:none}
+
+.header{background:#1E1B4B;color:#fff;padding:18px 18px 14px}
+.header-row{display:flex;justify-content:space-between;align-items:flex-start}
+.header h1{font-size:17px;font-weight:800;letter-spacing:-0.3px;margin:0}
+.header .sub{font-size:12px;color:#94A3B8;margin-top:4px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;margin-top:6px}
+.btn-login{background:transparent;color:#94A3B8;border:1px solid #475569;border-radius:8px;padding:5px 14px;font-size:12px;cursor:pointer}
+.btn-admin{background:#fff;color:#1E1B4B;border:none;border-radius:20px;padding:5px 14px;font-weight:800;font-size:12px;cursor:pointer}
+
+.tabs{display:flex;background:#fff;border-bottom:1px solid #E8E7F0;position:sticky;top:0;z-index:20}
+.tabs button{flex:1;padding:11px 0;border:none;background:none;cursor:pointer;font-size:12px;white-space:nowrap;border-bottom:2px solid transparent;color:#94A3B8;font-weight:400}
+.tabs button.active{color:#1E1B4B;font-weight:700;border-bottom-color:#1E1B4B}
+
+.content{padding:14px}
+
+.card{background:#fff;border-radius:10px;padding:16px;margin-bottom:10px;border:1px solid #E8E7F0}
+.card-flush{background:#fff;border-radius:10px;margin-bottom:10px;border:1px solid #E8E7F0;overflow:hidden}
+
+.inp{padding:10px 14px;border:1px solid #E8E7F0;border-radius:8px;font-size:13px;outline:none;background:#fff;color:#1E1B4B;width:100%}
+.inp:focus{border-color:#1E1B4B}
+.btn{background:#1E1B4B;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;padding:10px 18px}
+.btn-outline{background:none;border:1px solid #E8E7F0;border-radius:8px;cursor:pointer;font-size:12px;color:#1E1B4B;padding:8px 12px}
+.btn-danger{background:#FEF2F2;color:#DC2626;border:1px solid #FCA5A5;border-radius:8px;font-weight:700;cursor:pointer;padding:10px;width:100%}
+
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat-box{background:#fff;border-radius:10px;padding:12px 8px;text-align:center;border:1px solid #E8E7F0}
+.stat-label{font-size:10px;color:#94A3B8;font-weight:600}
+.stat-val{font-weight:900;font-size:22px;color:#1E1B4B;margin-top:2px}
+
+.group-header{padding:10px 14px;border-left:3px solid;display:flex;align-items:center;justify-content:space-between}
+.member-row{display:flex;align-items:center;padding:11px 14px;cursor:pointer}
+.member-row+.member-row{border-top:1px solid #F8F9FC}
+.rank-circle{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;margin-right:10px;flex-shrink:0}
+
+.overlay{position:fixed;inset:0;background:rgba(30,27,75,0.6);display:flex;align-items:center;justify-content:center;z-index:100}
+.overlay-bottom{align-items:flex-end}
+.modal{background:#fff;border-radius:14px;padding:24px;width:300px}
+.modal-bottom{background:#fff;border-radius:14px 14px 0 0;padding:22px;width:100%;max-width:480px;max-height:88vh;overflow:auto}
+
+.progress-bar{height:4px;background:#E8E7F0;border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;transition:width 0.3s}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1E1B4B;color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;font-weight:700;z-index:200;white-space:nowrap}
+
+.chart-container{padding:0 4px 10px;height:160px}
+.chart-container canvas{width:100%!important;height:100%!important}
+
+.period-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
+.period-row+.period-row{border-top:1px solid #F8F9FC}
+.period-dot{width:6px;height:6px;border-radius:50%;background:#1E1B4B;flex-shrink:0;margin-right:8px}
+
+.goal-tag{background:#F8F9FC;color:#1E1B4B;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid #E8E7F0;display:inline-block;margin:2px}
+
+.loading-screen{display:flex;align-items:center;justify-content:center;height:100vh;background:#1E1B4B;color:#fff;font-size:15px}
+
+.flex{display:flex}.gap-8{gap:8px}.gap-6{gap:6px}.items-center{align-items:center}.justify-between{justify-content:space-between}.flex-1{flex:1}.w-full{width:100%}.mt-8{margin-top:8px}.mt-10{margin-top:10px}.mt-14{margin-top:14px}.mb-6{margin-bottom:6px}.mb-8{margin-bottom:8px}.mb-10{margin-bottom:10px}.mb-14{margin-bottom:14px}.text-center{text-align:center}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+<script>
+// ─── Firebase Init ───
+firebase.initializeApp({
+  apiKey: "AIzaSyD8ZMyHhrL7tiCNyhTSxBXWdGxqUg8XwF8",
+  authDomain: "routine-ca0ee.firebaseapp.com",
+  projectId: "routine-ca0ee",
+  storageBucket: "routine-ca0ee.firebasestorage.app",
+  messagingSenderId: "845375711200",
+  appId: "1:845375711200:web:b7a68f8963860a26432d85"
+});
+const db = firebase.firestore();
+const DOC_REF = db.collection("routine").doc("main");
+
+// ─── Constants ───
+const NAVY = "#1E1B4B", MID = "#94A3B8", RED = "#DC2626", GREEN = "#10B981";
+const GC = {
+  1: { border: NAVY, text: NAVY, badge: "#E8E7F0", label: "S등급", range: "100% 이상" },
+  2: { border: "#475569", text: "#334155", badge: "#E2E8F0", label: "A등급", range: "85~99%" },
+  3: { border: MID, text: "#64748B", badge: "#F1F5F9", label: "B등급", range: "50~84%" },
+  4: { border: RED, text: RED, badge: "#FEE2E2", label: "C등급", range: "50% 미만 / 개별목표 50% 미만" },
+};
+
+function mkData() {
+  return {
+    config: {
+      totalWeeks: 10, currentWeek: 1, adminPw: "5115",
+      periods: {
+        rest1Start: "2026-03-30", rest1End: "2026-04-05",
+        rest2Start: "2026-04-06", rest2End: "2026-04-12",
+        opStart: "2026-04-13", opEnd: "2026-06-21"
+      }
+    },
+    members: [], records: {}
+  };
+}
+
+function getGroupId(rate, goalStats) {
+  if (goalStats.some(g => g.target > 0 && g.rate < 0.5) || rate < 0.5) return 4;
+  if (rate >= 1.0) return 1;
+  if (rate >= 0.85) return 2;
+  return 3;
+}
+
+function calcStats(member, records, upToWeek) {
+  const goalStats = member.goals.map((goal, gi) => {
+    let wc = 0, ach = 0;
+    for (let w = 1; w <= upToWeek; w++) {
+      const v = records["w"+w]?.[member.id]?.[gi];
+      if (v !== undefined && v !== null && v !== "") { wc++; ach += Math.max(0, Number(v)); }
+    }
+    const tgt = wc * goal.target;
+    return { name: goal.name, weeklyTarget: goal.target, target: tgt, achieved: ach, weekCount: wc, rate: tgt > 0 ? ach/tgt : 0 };
+  });
+  const totalTarget = goalStats.reduce((s,g) => s+g.target, 0);
+  const totalAchieved = goalStats.reduce((s,g) => s+g.achieved, 0);
+  const overallRate = totalTarget > 0 ? totalAchieved/totalTarget : 0;
+  return { goalStats, totalTarget, totalAchieved, overallRate, groupId: totalTarget===0 ? 4 : getGroupId(overallRate, goalStats) };
+}
+
+function getWeeklyRates(member, records, upToWeek) {
+  const result = [];
+  for (let w = 1; w <= upToWeek; w++) {
+    const rec = records["w"+w]?.[member.id];
+    if (!rec) { result.push(null); continue; }
+    let tgt = 0, ach = 0;
+    member.goals.forEach((g, gi) => {
+      const v = rec[gi];
+      if (v !== undefined && v !== null && v !== "") { tgt += g.target; ach += Math.max(0, Number(v)); }
+    });
+    result.push(tgt > 0 ? Math.round((ach/tgt)*100) : null);
+  }
+  return result;
+}
+
+function getCurrentPeriod(periods) {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const check = (s,e) => { if(!s||!e) return false; return now >= new Date(s) && now <= new Date(e); };
+  if (check(periods.rest1Start, periods.rest1End)) return { phase:"rest1", label:"안식주1 · 목표작성" };
+  if (check(periods.rest2Start, periods.rest2End)) return { phase:"rest2", label:"안식주2 · 휴식" };
+  if (periods.opStart && periods.opEnd) {
+    const s = new Date(periods.opStart), e = new Date(periods.opEnd);
+    if (now >= s && now <= e) { const wk = Math.floor((now-s)/(7*864e5))+1; return { phase:"op", label:"운영기간 · "+wk+"주차" }; }
+    if (now < s) return { phase:"before_op", label:"운영 시작 전" };
+    if (now > e) return { phase:"ended", label:"운영 종료" };
+  }
+  return { phase:"unknown", label:"기간 미설정" };
+}
+
+function fmtDate(d) { return d ? d.replace(/-/g,".") : "-"; }
+function pct(r) { return Math.round(r*100)+"%"; }
+
+// ─── App State ───
+let state = {
+  data: null, loading: true, tab: "dash", isAdmin: false, modal: null, selId: null,
+  toast: "", pwInput: "", newName: "", goalForm: [], weekInputs: {}, newPw: "",
+  deleteConfirm: null, nicknameEdit: {}, periodEdit: null, charts: {}
+};
+
+let unsubscribe = null;
+
+function initFirestore() {
+  unsubscribe = DOC_REF.onSnapshot(doc => {
+    if (doc.exists) {
+      const d = doc.data();
+      if (!d.config.periods) d.config.periods = mkData().config.periods;
+      state.data = d;
+    } else {
+      const init = mkData();
+      DOC_REF.set(init);
+      state.data = init;
+    }
+    state.loading = false;
+    render();
+  }, err => {
+    console.error("Firestore error:", err);
+    state.data = mkData();
+    state.loading = false;
+    render();
+  });
+}
+
+async function save(nd) {
+  state.data = nd;
+  render();
+  try { await DOC_REF.set(nd); } catch(e) { console.error("Save error:", e); }
+}
+
+function showToast(msg) {
+  state.toast = msg;
+  render();
+  setTimeout(() => { state.toast = ""; render(); }, 2500);
+}
+
+// ─── Render ───
+function h(tag, attrs, ...children) {
+  const el = document.createElement(tag);
+  if (attrs) Object.entries(attrs).forEach(([k,v]) => {
+    if (k === "style" && typeof v === "object") Object.assign(el.style, v);
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2).toLowerCase(), v);
+    else if (k === "className") el.className = v;
+    else if (k === "value") el.value = v ?? "";
+    else if (k === "disabled") { if(v) el.disabled = true; }
+    else if (k === "type") el.type = v;
+    else if (k === "placeholder") el.placeholder = v;
+    else if (k === "min") el.min = v;
+    else if (k === "autofocus") { if(v) setTimeout(()=>el.focus(),50); }
+    else el.setAttribute(k, v);
+  });
+  children.flat(Infinity).forEach(c => {
+    if (c == null || c === false) return;
+    el.appendChild(typeof c === "string" || typeof c === "number" ? document.createTextNode(c) : c);
+  });
+  return el;
+}
+
+function render() {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+  if (state.loading) { app.appendChild(h("div",{className:"loading-screen"},"불러오는 중...")); return; }
+
+  const data = state.data;
+  const cfg = data.config;
+  const periods = cfg.periods || {};
+  const currentPeriod = getCurrentPeriod(periods);
+  const isGoalLocked = currentPeriod.phase !== "rest1" && currentPeriod.phase !== "unknown" && currentPeriod.phase !== "before_op";
+
+  const membersWithStats = data.members
+    .map(m => ({...m, stats: calcStats(m, data.records, cfg.currentWeek)}))
+    .sort((a,b) => b.stats.overallRate - a.stats.overallRate);
+
+  const byGroup = [1,2,3,4].map(gid => ({gid, ...GC[gid], members: membersWithStats.filter(m => m.stats.groupId === gid)}));
+  const selMember = state.selId ? membersWithStats.find(m => m.id === state.selId) : null;
+  const avgRate = data.members.length ? membersWithStats.reduce((s,m) => s+m.stats.overallRate, 0)/data.members.length : 0;
+
+  const tabs = [
+    {id:"dash",label:"대시보드"},{id:"members",label:"멤버"},{id:"weekly",label:"주간체크"},{id:"graph",label:"그래프"},
+    ...(state.isAdmin ? [{id:"settings",label:"설정"}] : [])
+  ];
+
+  // ─── Header ───
+  const periodColors = { rest1:{bg:"#E8E7F0",color:NAVY}, rest2:{bg:"#E2E8F0",color:"#334155"}, op:{bg:NAVY,color:"#fff"}, ended:{bg:"#FEE2E2",color:RED}, unknown:{bg:"#F1F5F9",color:MID}, before_op:{bg:"#E2E8F0",color:"#334155"} };
+  const pc = periodColors[currentPeriod.phase] || periodColors.unknown;
+
+  const header = h("div",{className:"header"},
+    h("div",{className:"header-row"},
+      h("div",null,
+        h("h1",null,"바른생활루틴이들"),
+        h("div",{className:"sub"}, cfg.currentWeek+"주차 / 총 "+cfg.totalWeeks+"주"),
+        h("span",{className:"badge",style:{background:pc.bg,color:pc.color}}, currentPeriod.label)
+      ),
+      state.isAdmin
+        ? h("button",{className:"btn-admin",onClick:()=>{state.isAdmin=false;render()}},"방장")
+        : h("button",{className:"btn-login",onClick:()=>{state.pwInput="";state.modal="login";render()}},"로그인")
+    )
+  );
+  app.appendChild(header);
+
+  // ─── Tabs ───
+  const tabBar = h("div",{className:"tabs"});
+  tabs.forEach(t => {
+    tabBar.appendChild(h("button",{className:state.tab===t.id?"active":"",onClick:()=>{state.tab=t.id;render()}},t.label));
+  });
+  app.appendChild(tabBar);
+
+  const content = h("div",{className:"content"});
+  app.appendChild(content);
+
+  // ─── Dashboard ───
+  if (state.tab === "dash") {
+    // Period schedule
+    const scheduleCard = h("div",{className:"card",style:{padding:"14px"}});
+    scheduleCard.appendChild(h("div",{style:{fontWeight:700,fontSize:"13px",color:NAVY,marginBottom:"10px"}},"운영 일정"));
+    [{label:"안식주1 · 목표작성",s:periods.rest1Start,e:periods.rest1End,phase:"rest1"},
+     {label:"안식주2 · 휴식",s:periods.rest2Start,e:periods.rest2End,phase:"rest2"},
+     {label:"운영기간 · "+cfg.totalWeeks+"주",s:periods.opStart,e:periods.opEnd,phase:"op"}
+    ].forEach((p,i) => {
+      const row = h("div",{className:"period-row",style:i>0?{borderTop:"1px solid #F8F9FC"}:{}});
+      const left = h("div",{className:"flex items-center"});
+      if (currentPeriod.phase === p.phase) left.appendChild(h("span",{className:"period-dot"}));
+      left.appendChild(h("span",{style:{fontSize:"13px",color:currentPeriod.phase===p.phase?NAVY:"#64748B",fontWeight:currentPeriod.phase===p.phase?700:400}},p.label));
+      row.appendChild(left);
+      row.appendChild(h("span",{style:{fontSize:"11px",color:MID}},fmtDate(p.s)+" ~ "+fmtDate(p.e)));
+      scheduleCard.appendChild(row);
+    });
+    content.appendChild(scheduleCard);
+
+    // Stats
+    const grid = h("div",{className:"stat-grid"});
+    [{l:"참여인원",v:data.members.length+"명"},{l:"진행주차",v:cfg.currentWeek+"주차"},{l:"평균달성",v:pct(avgRate)}].forEach(s => {
+      const box = h("div",{className:"stat-box"}, h("div",{className:"stat-label"},s.l), h("div",{className:"stat-val"},s.v));
+      grid.appendChild(box);
+    });
+    content.appendChild(grid);
+
+    if (!data.members.length) {
+      content.appendChild(h("div",{style:{textAlign:"center",padding:"56px 0",color:MID}},"멤버를 먼저 추가해"));
+    } else {
+      byGroup.forEach(g => {
+        if (!g.members.length) return;
+        const card = h("div",{className:"card-flush"});
+        const gh = h("div",{className:"group-header",style:{borderColor:g.border,background:g.gid===4?"#FEF2F2":"#F8F9FC"}});
+        gh.appendChild(h("div",null,
+          h("span",{style:{fontWeight:700,color:g.text,fontSize:"14px"}},g.label),
+          h("span",{style:{fontSize:"11px",color:MID,marginLeft:"8px"}},g.range)
+        ));
+        gh.appendChild(h("span",{style:{fontSize:"11px",fontWeight:700,color:g.text,background:"#fff",padding:"2px 10px",borderRadius:"20px",border:"1px solid "+g.border}},g.members.length+"명"));
+        card.appendChild(gh);
+
+        g.members.forEach(m => {
+          const rank = membersWithStats.indexOf(m)+1;
+          const row = h("div",{className:"member-row",onClick:()=>{state.selId=m.id;state.modal="detail";render()}});
+          row.appendChild(h("span",{className:"rank-circle",style:{background:rank<=3?NAVY:"#E8E7F0",color:rank<=3?"#fff":"#64748B"}},String(rank)));
+          const info = h("div",{style:{flex:1}});
+          info.appendChild(h("span",{style:{fontWeight:600,fontSize:"14px",color:NAVY}},m.name));
+          if (m.nickname) info.appendChild(h("span",{style:{fontSize:"11px",color:MID,marginLeft:"6px"}},m.nickname));
+          row.appendChild(info);
+          const right = h("div",{style:{textAlign:"right"}});
+          right.appendChild(h("div",{style:{fontWeight:900,color:NAVY,fontSize:"17px"}},pct(m.stats.overallRate)));
+          right.appendChild(h("div",{style:{fontSize:"10px",color:MID}},m.stats.totalAchieved+"/"+m.stats.totalTarget+"회"));
+          row.appendChild(right);
+          card.appendChild(row);
+        });
+        content.appendChild(card);
+      });
+    }
+  }
+
+  // ─── Members ───
+  if (state.tab === "members") {
+    if (state.isAdmin) {
+      const addRow = h("div",{className:"flex gap-8 mb-10"});
+      addRow.appendChild(h("input",{className:"inp",style:{flex:1},placeholder:"멤버 이름 입력",value:state.newName,onInput:e=>{state.newName=e.target.value},onKeydown:e=>{if(e.key==="Enter")addMember()}}));
+      addRow.appendChild(h("button",{className:"btn",onClick:addMember},"추가"));
+      content.appendChild(addRow);
+    }
+    if (!data.members.length) {
+      content.appendChild(h("div",{style:{textAlign:"center",padding:"40px 0",color:MID}},"멤버가 없어"));
+    }
+    membersWithStats.forEach(m => {
+      const gc = GC[m.stats.groupId];
+      const card = h("div",{className:"card"});
+
+      const top = h("div",{className:"flex justify-between items-center mb-6"});
+      const nameArea = h("div",{className:"flex items-center gap-8"});
+      nameArea.appendChild(h("span",{style:{fontWeight:700,fontSize:"15px",color:NAVY}},m.name));
+      if (m.nickname && state.nicknameEdit[m.id] === undefined) nameArea.appendChild(h("span",{style:{fontSize:"12px",color:MID}},m.nickname));
+      top.appendChild(nameArea);
+      top.appendChild(h("span",{style:{background:gc.badge,color:gc.text,padding:"2px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:700}},pct(m.stats.overallRate)));
+      card.appendChild(top);
+
+      // Nickname
+      const nickArea = h("div",{className:"mb-8"});
+      if (state.nicknameEdit[m.id] !== undefined) {
+        const nr = h("div",{className:"flex gap-6 items-center"});
+        nr.appendChild(h("input",{className:"inp",style:{flex:1,padding:"6px 10px",fontSize:"12px"},placeholder:"별명 입력",value:state.nicknameEdit[m.id]||"",onInput:e=>{state.nicknameEdit[m.id]=e.target.value}}));
+        nr.appendChild(h("button",{className:"btn",style:{padding:"6px 12px",fontSize:"11px"},onClick:()=>{
+          save({...data, members: data.members.map(mem => mem.id===m.id ? {...mem, nickname: state.nicknameEdit[m.id]||""} : mem)});
+          delete state.nicknameEdit[m.id]; showToast("별명 저장");
+        }},"저장"));
+        nr.appendChild(h("button",{className:"btn-outline",style:{padding:"6px 10px",fontSize:"11px"},onClick:()=>{delete state.nicknameEdit[m.id];render()}},"취소"));
+        nickArea.appendChild(nr);
+      } else {
+        nickArea.appendChild(h("button",{className:"btn-outline",style:{padding:"4px 10px",fontSize:"11px"},onClick:()=>{state.nicknameEdit[m.id]=m.nickname||"";render()}},m.nickname?"별명 수정":"별명 추가"));
+      }
+      card.appendChild(nickArea);
+
+      // Goals
+      const tags = h("div",{style:{display:"flex",flexWrap:"wrap",gap:"5px"}});
+      m.goals.forEach(g => tags.appendChild(h("span",{className:"goal-tag"},g.name+" "+g.target+"회/주")));
+      card.appendChild(tags);
+
+      // Actions
+      const actions = h("div",{className:"flex gap-8 mt-10"});
+      actions.appendChild(h("button",{className:"btn-outline",style:{flex:1},onClick:()=>{state.selId=m.id;state.goalForm=m.goals.map(g=>({...g}));state.modal="goals";render()}},
+        "목표 편집"+(isGoalLocked&&!state.isAdmin?" (잠김)":"")
+      ));
+      if (state.isAdmin) {
+        if (state.deleteConfirm === m.id) {
+          const dc = h("div",{className:"flex gap-6"});
+          dc.appendChild(h("button",{style:{padding:"8px 12px",border:"none",borderRadius:"8px",background:RED,color:"#fff",fontWeight:700,cursor:"pointer",fontSize:"12px"},onClick:()=>{
+            save({...data,members:data.members.filter(mem=>mem.id!==m.id)}); state.deleteConfirm=null;
+          }},"확인"));
+          dc.appendChild(h("button",{className:"btn-outline",onClick:()=>{state.deleteConfirm=null;render()}},"취소"));
+          actions.appendChild(dc);
+        } else {
+          actions.appendChild(h("button",{style:{padding:"8px 14px",border:"1px solid #FCA5A5",borderRadius:"8px",background:"none",cursor:"pointer",fontSize:"12px",color:RED},onClick:()=>{state.deleteConfirm=m.id;render()}},"삭제"));
+        }
+      }
+      card.appendChild(actions);
+      content.appendChild(card);
+    });
+  }
+
+  // ─── Weekly Check ───
+  if (state.tab === "weekly") {
+    const wHeader = h("div",{style:{background:NAVY,color:"#fff",borderRadius:"10px",padding:"14px 16px",marginBottom:"12px"},className:"flex justify-between items-center"});
+    const wLeft = h("div",null,
+      h("div",{style:{fontWeight:700,fontSize:"17px"}},cfg.currentWeek+"주차 수행체크"),
+      h("div",{style:{fontSize:"11px",color:MID,marginTop:"2px"}},"방장만 입력 가능")
+    );
+    wHeader.appendChild(wLeft);
+    if (state.isAdmin) wHeader.appendChild(h("span",{style:{background:"#fff",color:NAVY,padding:"4px 10px",borderRadius:"20px",fontSize:"11px",fontWeight:800}},"편집 모드"));
+    content.appendChild(wHeader);
+
+    if (!data.members.length) {
+      content.appendChild(h("div",{style:{textAlign:"center",padding:"40px 0",color:MID}},"멤버를 먼저 추가해"));
+    }
+
+    data.members.forEach(m => {
+      const rec = data.records["w"+cfg.currentWeek]?.[m.id] || {};
+      const card = h("div",{className:"card"});
+      card.appendChild(h("div",{style:{fontWeight:700,fontSize:"14px",marginBottom:"10px",color:NAVY}},m.nickname?m.name+" ("+m.nickname+")":m.name));
+
+      m.goals.forEach((g,gi) => {
+        const savedVal = rec[gi];
+        const inputVal = state.weekInputs[m.id]?.[gi];
+        const displayVal = inputVal !== undefined ? inputVal : savedVal;
+        const rate = savedVal !== undefined ? Math.min(Number(savedVal)/g.target,1) : null;
+
+        const row = h("div",{className:"flex items-center",style:{marginBottom:gi<m.goals.length-1?"10px":"0"}});
+        const left = h("div",{style:{flex:1}});
+        const labelRow = h("div",{className:"flex justify-between",style:{marginBottom:"4px"}});
+        labelRow.appendChild(h("span",{style:{fontSize:"13px",fontWeight:500,color:NAVY}},g.name));
+        labelRow.appendChild(h("span",{style:{fontSize:"11px",color:MID}},"목표 "+g.target+"회"));
+        left.appendChild(labelRow);
+        if (rate !== null) {
+          const bar = h("div",{className:"progress-bar"});
+          bar.appendChild(h("div",{className:"progress-fill",style:{width:Math.min(rate*100,100)+"%",background:rate>=1?GREEN:NAVY}}));
+          left.appendChild(bar);
+        }
+        row.appendChild(left);
+
+        if (state.isAdmin) {
+          row.appendChild(h("input",{type:"number",min:"0",value:displayVal??"",placeholder:"0",style:{width:"52px",marginLeft:"10px",textAlign:"center",padding:"6px",border:"1px solid #E8E7F0",borderRadius:"6px",fontSize:"14px",background:"#fff",outline:"none"},onInput:e=>{
+            if(!state.weekInputs[m.id]) state.weekInputs[m.id]={};
+            state.weekInputs[m.id][gi]=e.target.value;
+          }}));
+        } else {
+          row.appendChild(h("span",{style:{fontWeight:700,marginLeft:"12px",fontSize:"15px",color:savedVal!==undefined?(Number(savedVal)>=g.target?GREEN:NAVY):"#CBD5E1"}},savedVal!==undefined?savedVal+"회":"-"));
+        }
+        card.appendChild(row);
+      });
+      content.appendChild(card);
+    });
+
+    if (state.isAdmin && data.members.length) {
+      content.appendChild(h("button",{className:"btn w-full",style:{padding:"14px",fontSize:"15px",marginTop:"4px",borderRadius:"10px"},onClick:saveWeekly},cfg.currentWeek+"주차 저장"));
+    }
+  }
+
+  // ─── Graph ───
+  if (state.tab === "graph") {
+    const gHeader = h("div",{style:{background:NAVY,color:"#fff",borderRadius:"10px",padding:"14px 16px",marginBottom:"14px"}});
+    gHeader.appendChild(h("div",{style:{fontWeight:700,fontSize:"17px"}},"주간 수행률 추이"));
+    gHeader.appendChild(h("div",{style:{fontSize:"11px",color:MID,marginTop:"2px"}},cfg.currentWeek+"주차까지"));
+    content.appendChild(gHeader);
+
+    if (!data.members.length) {
+      content.appendChild(h("div",{style:{textAlign:"center",padding:"56px 0",color:MID}},"데이터 없음"));
+    } else {
+      membersWithStats.forEach(m => {
+        const weekData = getWeeklyRates(m, data.records, cfg.currentWeek);
+        const hasData = weekData.some(d => d !== null);
+
+        const card = h("div",{className:"card-flush",style:{marginBottom:"14px"}});
+        const top = h("div",{className:"flex justify-between items-center",style:{padding:"14px 16px 8px"}});
+        const tLeft = h("div",null, h("span",{style:{fontWeight:700,fontSize:"15px",color:NAVY}},m.name));
+        if (m.nickname) tLeft.appendChild(h("span",{style:{fontSize:"11px",color:MID,marginLeft:"6px"}},m.nickname));
+        top.appendChild(tLeft);
+        const tRight = h("div",{style:{textAlign:"right"}});
+        tRight.appendChild(h("span",{style:{fontWeight:900,fontSize:"20px",color:NAVY}},pct(m.stats.overallRate)));
+        tRight.appendChild(h("div",{style:{fontSize:"10px",color:MID}},"누적 달성률"));
+        top.appendChild(tRight);
+        card.appendChild(top);
+
+        if (hasData) {
+          const chartWrap = h("div",{className:"chart-container"});
+          const canvas = h("canvas",null);
+          chartWrap.appendChild(canvas);
+          card.appendChild(chartWrap);
+
+          setTimeout(() => {
+            if (state.charts[m.id]) state.charts[m.id].destroy();
+            const labels = weekData.map((_,i) => (i+1)+"주");
+            state.charts[m.id] = new Chart(canvas, {
+              type: "line",
+              data: {
+                labels,
+                datasets: [{
+                  data: weekData,
+                  borderColor: NAVY,
+                  backgroundColor: "rgba(30,27,75,0.08)",
+                  borderWidth: 2.5,
+                  pointBackgroundColor: NAVY,
+                  pointBorderColor: "#fff",
+                  pointBorderWidth: 2,
+                  pointRadius: 4,
+                  pointHoverRadius: 6,
+                  fill: true,
+                  tension: 0.3,
+                  spanGaps: false
+                }]
+              },
+              options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false },
+                  tooltip: { backgroundColor: NAVY, titleColor: "#fff", bodyColor: "#fff", cornerRadius: 8, padding: 10,
+                    callbacks: { label: ctx => ctx.parsed.y !== null ? ctx.parsed.y+"%" : "-" }
+                  }
+                },
+                scales: {
+                  x: { grid: { display: false }, ticks: { font: { size: 10 }, color: MID } },
+                  y: { min: 0, max: 120, grid: { color: "#F1F5F9" }, ticks: { font: { size: 10 }, color: MID, callback: v => v+"%" } }
+                }
+              }
+            });
+          }, 50);
+        } else {
+          card.appendChild(h("div",{style:{padding:"24px 16px",textAlign:"center",color:MID,fontSize:"13px"}},"아직 기록 없음"));
+        }
+        content.appendChild(card);
+      });
+    }
+  }
+
+  // ─── Settings ───
+  if (state.tab === "settings" && state.isAdmin) {
+    // Period settings
+    const pCard = h("div",{className:"card"});
+    pCard.appendChild(h("div",{style:{fontWeight:700,marginBottom:"14px",color:NAVY,fontSize:"15px"}},"운영 기간 설정"));
+
+    if (!state.periodEdit) {
+      [{l:"안식주1 · 목표작성",s:periods.rest1Start,e:periods.rest1End},
+       {l:"안식주2 · 휴식",s:periods.rest2Start,e:periods.rest2End},
+       {l:"운영기간",s:periods.opStart,e:periods.opEnd}
+      ].forEach((r,i) => {
+        const row = h("div",{className:"flex justify-between",style:{padding:"8px 0",borderTop:i>0?"1px solid #F8F9FC":"none"}});
+        row.appendChild(h("span",{style:{fontSize:"13px",color:NAVY,fontWeight:500}},r.l));
+        row.appendChild(h("span",{style:{fontSize:"12px",color:MID}},fmtDate(r.s)+" ~ "+fmtDate(r.e)));
+        pCard.appendChild(row);
+      });
+      pCard.appendChild(h("button",{className:"btn-outline w-full",style:{padding:"10px",marginTop:"8px",fontSize:"13px"},onClick:()=>{state.periodEdit={...periods};render()}},"기간 수정"));
+    } else {
+      [{l:"안식주1 시작",k:"rest1Start"},{l:"안식주1 종료",k:"rest1End"},{l:"안식주2 시작",k:"rest2Start"},{l:"안식주2 종료",k:"rest2End"},{l:"운영 시작",k:"opStart"},{l:"운영 종료",k:"opEnd"}].forEach(f => {
+        const row = h("div",{className:"flex items-center gap-8 mb-8"});
+        row.appendChild(h("span",{style:{fontSize:"12px",color:NAVY,fontWeight:500,minWidth:"80px"}},f.l));
+        row.appendChild(h("input",{type:"date",className:"inp",style:{flex:1,padding:"8px 10px",fontSize:"12px"},value:state.periodEdit[f.k]||"",onInput:e=>{state.periodEdit[f.k]=e.target.value}}));
+        pCard.appendChild(row);
+      });
+      const btns = h("div",{className:"flex gap-8 mt-8"});
+      btns.appendChild(h("button",{className:"btn-outline",style:{flex:1,padding:"10px"},onClick:()=>{state.periodEdit=null;render()}},"취소"));
+      btns.appendChild(h("button",{className:"btn",style:{flex:1,padding:"10px"},onClick:()=>{
+        save({...data,config:{...cfg,periods:{...state.periodEdit}}});
+        state.periodEdit=null; showToast("기간 저장됨");
+      }},"저장"));
+      pCard.appendChild(btns);
+    }
+    content.appendChild(pCard);
+
+    // Operation settings
+    const oCard = h("div",{className:"card"});
+    oCard.appendChild(h("div",{style:{fontWeight:700,marginBottom:"14px",color:NAVY,fontSize:"15px"}},"운영 설정"));
+
+    const weeksRow = h("div",{className:"flex justify-between items-center mb-14"});
+    weeksRow.appendChild(h("span",{style:{fontSize:"14px",color:NAVY}},"총 운영 주수"));
+    const weeksOpts = h("div",{className:"flex gap-6"});
+    [8,10,12].forEach(w => {
+      weeksOpts.appendChild(h("button",{style:{padding:"7px 14px",border:"1px solid #E8E7F0",borderRadius:"6px",cursor:"pointer",background:cfg.totalWeeks===w?NAVY:"#fff",color:cfg.totalWeeks===w?"#fff":NAVY,fontWeight:cfg.totalWeeks===w?800:400,fontSize:"13px"},onClick:()=>save({...data,config:{...cfg,totalWeeks:w}})},w+"주"));
+    });
+    weeksRow.appendChild(weeksOpts);
+    oCard.appendChild(weeksRow);
+
+    const weekRow = h("div",{className:"flex justify-between items-center"});
+    weekRow.appendChild(h("span",{style:{fontSize:"14px",color:NAVY}},"현재 주차 조정"));
+    const weekCtrl = h("div",{className:"flex gap-8 items-center"});
+    weekCtrl.appendChild(h("button",{style:{width:"32px",height:"32px",border:"1px solid #E8E7F0",borderRadius:"6px",cursor:"pointer",background:"#fff",fontSize:"14px",color:NAVY},onClick:()=>{if(cfg.currentWeek>1)save({...data,config:{...cfg,currentWeek:cfg.currentWeek-1}})}},"◀"));
+    weekCtrl.appendChild(h("span",{style:{fontWeight:800,minWidth:"56px",textAlign:"center",fontSize:"16px",color:NAVY}},cfg.currentWeek+"주차"));
+    weekCtrl.appendChild(h("button",{style:{width:"32px",height:"32px",border:"none",borderRadius:"6px",cursor:"pointer",background:NAVY,color:"#fff",fontSize:"14px"},onClick:()=>{if(cfg.currentWeek<cfg.totalWeeks){save({...data,config:{...cfg,currentWeek:cfg.currentWeek+1}});showToast((cfg.currentWeek+1)+"주차 시작")}}},"▶"));
+    weekRow.appendChild(weekCtrl);
+    oCard.appendChild(weekRow);
+    content.appendChild(oCard);
+
+    // Password
+    const pwCard = h("div",{className:"card"});
+    pwCard.appendChild(h("div",{style:{fontWeight:700,marginBottom:"10px",color:NAVY}},"비밀번호 변경"));
+    const pwRow = h("div",{className:"flex gap-8"});
+    pwRow.appendChild(h("input",{type:"password",className:"inp",style:{flex:1},placeholder:"새 비밀번호",value:state.newPw,onInput:e=>{state.newPw=e.target.value}}));
+    pwRow.appendChild(h("button",{className:"btn",onClick:()=>{if(!state.newPw)return;save({...data,config:{...cfg,adminPw:state.newPw}});state.newPw="";showToast("변경됨")}},"변경"));
+    pwCard.appendChild(pwRow);
+    content.appendChild(pwCard);
+
+    // Reset
+    const resetCard = h("div",{className:"card",style:{border:"1px solid #FCA5A5"}});
+    resetCard.appendChild(h("div",{style:{fontWeight:700,marginBottom:"6px",color:RED}},"데이터 초기화"));
+    resetCard.appendChild(h("div",{style:{fontSize:"12px",color:MID,marginBottom:"10px"}},"모든 멤버, 목표, 기록이 삭제됨. 복구 불가."));
+    if (state.deleteConfirm === "reset") {
+      const dc = h("div",{className:"flex gap-8"});
+      dc.appendChild(h("button",{style:{flex:1,background:RED,color:"#fff",border:"none",borderRadius:"8px",padding:"10px",fontWeight:700,cursor:"pointer"},onClick:()=>{save(mkData());state.isAdmin=false;state.tab="dash";state.deleteConfirm=null;showToast("초기화 완료")}},"진짜 삭제"));
+      dc.appendChild(h("button",{className:"btn-outline",style:{flex:1,padding:"10px"},onClick:()=>{state.deleteConfirm=null;render()}},"취소"));
+      resetCard.appendChild(dc);
+    } else {
+      resetCard.appendChild(h("button",{className:"btn-danger",onClick:()=>{state.deleteConfirm="reset";render()}},"초기화"));
+    }
+    content.appendChild(resetCard);
+  }
+
+  // ─── Modals ───
+  if (state.modal === "login") {
+    const ov = h("div",{className:"overlay",onClick:()=>{state.modal=null;render()}});
+    const md = h("div",{className:"modal",onClick:e=>e.stopPropagation()});
+    md.appendChild(h("div",{style:{fontWeight:800,fontSize:"18px",marginBottom:"4px",color:NAVY}},"방장 로그인"));
+    md.appendChild(h("div",{style:{fontSize:"12px",color:MID,marginBottom:"16px"}},"비밀번호를 입력해"));
+    md.appendChild(h("input",{type:"password",className:"inp",style:{marginBottom:"14px"},placeholder:"비밀번호",value:state.pwInput,autofocus:true,onInput:e=>{state.pwInput=e.target.value},onKeydown:e=>{if(e.key==="Enter")doLogin()}}));
+    const btns = h("div",{className:"flex gap-8"});
+    btns.appendChild(h("button",{className:"btn-outline",style:{flex:1,padding:"12px",fontSize:"14px"},onClick:()=>{state.modal=null;render()}},"취소"));
+    btns.appendChild(h("button",{className:"btn",style:{flex:1,padding:"12px",fontSize:"14px"},onClick:doLogin},"로그인"));
+    md.appendChild(btns);
+    ov.appendChild(md);
+    app.appendChild(ov);
+  }
+
+  if (state.modal === "goals" && state.selId) {
+    const ov = h("div",{className:"overlay overlay-bottom",onClick:()=>{state.modal=null;render()}});
+    const md = h("div",{className:"modal-bottom",onClick:e=>e.stopPropagation()});
+    const mem = data.members.find(m=>m.id===state.selId);
+    md.appendChild(h("div",{style:{fontWeight:800,fontSize:"18px",marginBottom:"4px",color:NAVY}},(mem?mem.name:"")+"의 목표"));
+
+    if (isGoalLocked && !state.isAdmin) {
+      md.appendChild(h("div",{style:{background:"#F8F9FC",border:"1px solid #E8E7F0",borderRadius:"8px",padding:"8px 12px",marginBottom:"14px",fontSize:"12px",color:NAVY}},"목표 입력 기간이 지나서 수정할 수 없어. 방장에게 요청해."));
+    } else {
+      md.appendChild(h("div",{style:{fontSize:"12px",color:MID,marginBottom:"14px"}},"운동(1번)은 필수이며 최소 2회 | 최대 6개"));
+    }
+
+    state.goalForm.forEach((g,i) => {
+      const row = h("div",{className:"flex gap-8 items-center mb-8"});
+      const canEdit = !(isGoalLocked && !state.isAdmin) && i !== 0;
+      const canEditTarget = !(isGoalLocked && !state.isAdmin);
+      row.appendChild(h("input",{className:"inp",style:{flex:2,background:((!canEdit)?"#F8F9FC":"#fff")},placeholder:"목표명",value:g.name,disabled:!canEdit,onInput:e=>{state.goalForm[i]={...state.goalForm[i],name:e.target.value};render()}}));
+      row.appendChild(h("input",{type:"number",min:i===0?"2":"1",className:"inp",style:{width:"52px",textAlign:"center",padding:"10px 4px",background:(!canEditTarget?"#F8F9FC":"#fff")},value:g.target,disabled:!canEditTarget,onInput:e=>{state.goalForm[i]={...state.goalForm[i],target:Math.max(i===0?2:1,Number(e.target.value))};render()}}));
+      row.appendChild(h("span",{style:{fontSize:"11px",color:MID,whiteSpace:"nowrap"}},"회/주"));
+      if (i > 0 && canEditTarget) {
+        row.appendChild(h("button",{style:{color:RED,border:"none",background:"none",cursor:"pointer",fontSize:"22px",padding:"0 4px",lineHeight:"1",flexShrink:0},onClick:()=>{state.goalForm=state.goalForm.filter((_,idx)=>idx!==i);render()}},"×"));
+      }
+      md.appendChild(row);
+    });
+
+    if (state.goalForm.length < 6 && !(isGoalLocked && !state.isAdmin)) {
+      md.appendChild(h("button",{style:{width:"100%",padding:"10px",border:"1px dashed "+MID,borderRadius:"8px",background:"none",cursor:"pointer",color:MID,marginBottom:"6px",fontSize:"13px"},onClick:()=>{state.goalForm.push({name:"",target:1});render()}},"+ 목표 추가 ("+state.goalForm.length+"/6)"));
+    }
+
+    const btns = h("div",{className:"flex gap-8 mt-14"});
+    btns.appendChild(h("button",{className:"btn-outline",style:{flex:1,padding:"12px",borderRadius:"10px",fontSize:"14px"},onClick:()=>{state.modal=null;render()}},"닫기"));
+    if (!(isGoalLocked && !state.isAdmin) || state.isAdmin) {
+      btns.appendChild(h("button",{className:"btn",style:{flex:1,padding:"12px",borderRadius:"10px",fontSize:"14px"},onClick:saveGoals},"저장"));
+    }
+    md.appendChild(btns);
+    ov.appendChild(md);
+    app.appendChild(ov);
+  }
+
+  if (state.modal === "detail" && selMember) {
+    const gc = GC[selMember.stats.groupId];
+    const weekData = getWeeklyRates(selMember, data.records, cfg.currentWeek);
+    const hasGraph = weekData.some(d => d !== null);
+
+    const ov = h("div",{className:"overlay overlay-bottom",onClick:()=>{state.modal=null;render()}});
+    const md = h("div",{className:"modal-bottom",style:{maxHeight:"85vh"},onClick:e=>e.stopPropagation()});
+
+    const top = h("div",{className:"flex justify-between",style:{alignItems:"flex-start",marginBottom:"16px"}});
+    const tl = h("div",null);
+    tl.appendChild(h("div",{style:{fontWeight:800,fontSize:"22px",color:NAVY}},selMember.name));
+    if (selMember.nickname) tl.appendChild(h("div",{style:{fontSize:"13px",color:MID,marginTop:"2px"}},selMember.nickname));
+    tl.appendChild(h("span",{style:{background:gc.badge,color:gc.text,padding:"3px 12px",borderRadius:"20px",fontSize:"12px",fontWeight:700,display:"inline-block",marginTop:"6px"}},gc.label));
+    top.appendChild(tl);
+    const tr = h("div",{style:{textAlign:"right"}});
+    tr.appendChild(h("div",{style:{fontSize:"36px",fontWeight:900,color:NAVY,lineHeight:1}},pct(selMember.stats.overallRate)));
+    tr.appendChild(h("div",{style:{fontSize:"11px",color:MID,marginTop:"4px"}},selMember.stats.totalAchieved+"/"+selMember.stats.totalTarget+"회 누적"));
+    top.appendChild(tr);
+    md.appendChild(top);
+
+    if (hasGraph) {
+      const chartBox = h("div",{style:{background:NAVY,borderRadius:"10px",padding:"12px 8px",marginBottom:"16px"}});
+      chartBox.appendChild(h("div",{style:{fontSize:"11px",color:MID,fontWeight:600,padding:"0 8px 6px"}},"주간 추이"));
+      const cWrap = h("div",{style:{height:"120px"}});
+      const canvas = h("canvas",null);
+      cWrap.appendChild(canvas);
+      chartBox.appendChild(cWrap);
+      md.appendChild(chartBox);
+
+      setTimeout(() => {
+        if (state.charts["detail_"+selMember.id]) state.charts["detail_"+selMember.id].destroy();
+        state.charts["detail_"+selMember.id] = new Chart(canvas, {
+          type:"line",
+          data: {
+            labels: weekData.map((_,i)=>(i+1)+"주"),
+            datasets:[{ data:weekData, borderColor:"#fff", backgroundColor:"rgba(255,255,255,0.1)", borderWidth:2, pointBackgroundColor:"#fff", pointRadius:3, fill:true, tension:0.3, spanGaps:false }]
+          },
+          options:{
+            responsive:true, maintainAspectRatio:false,
+            plugins:{legend:{display:false},tooltip:{backgroundColor:"#fff",titleColor:NAVY,bodyColor:NAVY,cornerRadius:8,callbacks:{label:ctx=>ctx.parsed.y!==null?ctx.parsed.y+"%":"-"}}},
+            scales:{
+              x:{grid:{display:false},ticks:{font:{size:9},color:MID}},
+              y:{min:0,max:120,grid:{color:"rgba(255,255,255,0.08)"},ticks:{font:{size:9},color:"#64748B",callback:v=>v+"%"}}
+            }
+          }
+        });
+      },50);
+    }
+
+    const goalSection = h("div",{style:{borderTop:"1px solid #E8E7F0",paddingTop:"14px"}});
+    goalSection.appendChild(h("div",{style:{fontSize:"12px",color:MID,fontWeight:700,marginBottom:"12px",letterSpacing:"0.5px"}},"목표별 달성률"));
+
+    selMember.stats.goalStats.forEach(gs => {
+      const gd = h("div",{style:{marginBottom:"14px"}});
+      const gr = h("div",{className:"flex justify-between",style:{marginBottom:"5px"}});
+      gr.appendChild(h("span",{style:{fontSize:"14px",fontWeight:600,color:NAVY}},gs.name));
+      gr.appendChild(h("span",{style:{fontSize:"14px",fontWeight:800,color:gs.rate>=1?GREEN:gs.rate>=0.5?NAVY:RED}},pct(gs.rate)));
+      gd.appendChild(gr);
+      const bar = h("div",{style:{height:"5px",background:"#E8E7F0",borderRadius:"3px",overflow:"hidden"}});
+      bar.appendChild(h("div",{style:{height:"5px",width:Math.min(gs.rate*100,100)+"%",background:gs.rate>=1?GREEN:gs.rate>=0.5?NAVY:RED,borderRadius:"3px",transition:"width 0.3s"}}));
+      gd.appendChild(bar);
+      const info = h("div",{className:"flex justify-between",style:{marginTop:"3px"}});
+      info.appendChild(h("span",{style:{fontSize:"10px",color:MID}},gs.achieved+"회 / "+gs.weeklyTarget+"회x"+gs.weekCount+"주 = 목표 "+gs.target+"회"));
+      if (gs.target > 0 && gs.rate < 0.5) info.appendChild(h("span",{style:{fontSize:"10px",color:RED,fontWeight:700}},"C등급 사유"));
+      gd.appendChild(info);
+      goalSection.appendChild(gd);
+    });
+    md.appendChild(goalSection);
+    md.appendChild(h("button",{style:{width:"100%",background:"#F8F9FC",color:NAVY,border:"none",borderRadius:"10px",padding:"12px",fontWeight:700,cursor:"pointer",marginTop:"8px",fontSize:"14px"},onClick:()=>{state.modal=null;render()}},"닫기"));
+    ov.appendChild(md);
+    app.appendChild(ov);
+  }
+
+  // Toast
+  if (state.toast) {
+    app.appendChild(h("div",{className:"toast"},state.toast));
+  }
+}
+
+// ─── Actions ───
+function doLogin() {
+  if (state.pwInput === state.data.config.adminPw) {
+    state.isAdmin = true; state.modal = null; state.pwInput = "";
+    showToast("방장 모드 활성화");
+  } else showToast("비밀번호 틀림");
+}
+
+function addMember() {
+  if (!state.newName.trim()) return;
+  const nm = state.newName.trim();
+  const d = state.data;
+  save({...d, members:[...d.members, {id:Date.now().toString(), name:nm, nickname:"", goals:[{name:"운동",target:2}]}]});
+  state.newName = "";
+  showToast(nm+" 추가됨");
+}
+
+function saveGoals() {
+  const valid = state.goalForm.filter(g => g.name.trim() && g.target > 0);
+  if (!valid.length) return;
+  if (valid[0].target < 2) { showToast("운동은 최소 2회"); return; }
+  const d = state.data;
+  save({...d, members: d.members.map(m => m.id === state.selId ? {...m, goals: valid} : m)});
+  state.modal = null;
+  showToast("목표 저장됨");
+}
+
+function saveWeekly() {
+  const d = {...state.data};
+  if (!d.records) d.records = {};
+  const wk = "w"+d.config.currentWeek;
+  if (!d.records[wk]) d.records[wk] = {};
+  Object.entries(state.weekInputs).forEach(([mid,goals]) => {
+    if (!d.records[wk][mid]) d.records[wk][mid] = {};
+    Object.entries(goals).forEach(([gi,val]) => {
+      if (val !== "" && val !== undefined) d.records[wk][mid][gi] = Number(val);
+    });
+  });
+  save(d);
+  state.weekInputs = {};
+  showToast("저장 완료");
+}
+
+// ─── Start ───
+initFirestore();
+</script>
+</body>
+</html>
