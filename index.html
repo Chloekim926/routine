@@ -133,13 +133,13 @@ function render(){
   const byGrp=[1,2,3,4].map(g=>({gid:g,...GC[g],members:mws.filter(m=>m.stats.groupId===g)}));
   const selMem=S.selId?mws.find(m=>m.id===S.selId):null;
   const avgRate=D.members.length?mws.reduce((s,m)=>s+m.stats.overallRate,0)/D.members.length:0;
-  const tabs=[{id:"dash",l:"대시보드"},{id:"members",l:"목표작성"},{id:"weekly",l:"주간체크"},{id:"graph",l:"그래프"},{id:"history",l:"조상님들"},...(S.isAdmin?[{id:"settings",l:"설정"}]:[])];
+  const tabs=[{id:"dash",l:"13기현황"},{id:"members",l:"목표작성"},{id:"weekly",l:"주간체크"},{id:"graph",l:"그래프"},{id:"history",l:"조상님들"},...(S.isAdmin?[{id:"settings",l:"설정"}]:[])];
 
   const pc={rest1:{bg:"#E8E7F0",c:NAVY},rest2:{bg:"#E2E8F0",c:"#334155"},op:{bg:NAVY,c:"#fff"},ended:{bg:"#FEE2E2",c:RED},unknown:{bg:"#F1F5F9",c:MID},before_op:{bg:"#E2E8F0",c:"#334155"}}[CP.phase]||{bg:"#F1F5F9",c:MID};
 
   let html='<div class="header"><div class="header-row"><div><h1>바른생활루틴이들</h1><div class="sub">'+cfg.currentWeek+'주차 / 총 '+cfg.totalWeeks+'주</div><span class="badge" style="background:'+pc.bg+';color:'+pc.c+'">'+CP.label+'</span></div>';
   if(S.isAdmin)html+='<button class="btn-admin" onclick="S.isAdmin=false;render()">방장</button>';
-  else html+='<button class="btn-login" onclick="S.pwInput=\'\';S.modal=\'login\';render()">로그인</button>';
+  else html+='<button class="btn-login" onclick="S.pwInput=\'\';S.modal=\'login\';render()">관리자</button>';
   html+='</div></div>';
 
   html+='<div class="tabs">';
@@ -311,7 +311,7 @@ html+='</div>';
     const mem=D.members.find(m=>m.id===S.selId);
     html+='<div class="overlay overlay-bottom" onclick="S.modal=null;render()"><div class="modal-bottom" onclick="event.stopPropagation()"><div style="font-weight:800;font-size:18px;margin-bottom:4px;color:'+NAVY+'">'+(mem?mem.name:"")+'의 목표</div>';
     if(goalLocked&&!S.isAdmin)html+='<div style="background:#F8F9FC;border:1px solid #E8E7F0;border-radius:8px;padding:8px 12px;margin-bottom:14px;font-size:12px;color:'+NAVY+'">목표 입력 기간이 지나서 수정할 수 없어. 방장에게 요청해.</div>';
-    else html+='<div style="font-size:12px;color:'+MID+';margin-bottom:14px">운동(1번)은 필수이며 최소 2회 | 최대 6개</div>';
+    else html+='<div style="font-size:12px;color:'+MID+';margin-bottom:14px">운동(2회 이상)은 필수이며 최소 2회 | 최대 6개</div>';
 
     S.goalForm.forEach((g,i)=>{
       const canName=!(goalLocked&&!S.isAdmin)&&i!==0;
