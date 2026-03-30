@@ -316,7 +316,7 @@ function render(){
       html+='</div>';
       html+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">';
       html+='<span style="font-size:11px;color:'+MID+';min-width:32px">기준</span>';
-      html+='<input class="inp" style="flex:1;padding:8px 10px;background:'+(ct?"#fff":"#F1F5F9")+'" placeholder="예: 헬스 or 러닝 30분 이상" data-sid="gd_'+i+'" value="'+esc(g.detail||"")+'" '+(ct?'':'disabled')+' oninput="S.goalForm['+i+'].detail=this.value">';
+      html+='<input class="inp" style="flex:1;padding:8px 10px;background:'+(ct?"#fff":"#F1F5F9")+'" placeholder="예: (운동)헬스 30분 이상, (독서)30p 이상. (논문) 진행or읽고 분석" data-sid="gd_'+i+'" value="'+esc(g.detail||"")+'" '+(ct?'':'disabled')+' oninput="S.goalForm['+i+'].detail=this.value">';
       html+='</div>';
       html+='<div style="display:flex;gap:8px;align-items:center">';
       html+='<span style="font-size:11px;color:'+MID+';min-width:32px">횟수</span>';
