@@ -133,7 +133,7 @@ function render(){
   const byGrp=[1,2,3,4].map(g=>({gid:g,...GC[g],members:mws.filter(m=>m.stats.groupId===g)}));
   const selMem=S.selId?mws.find(m=>m.id===S.selId):null;
   const avgRate=D.members.length?mws.reduce((s,m)=>s+m.stats.overallRate,0)/D.members.length:0;
-  const tabs=[{id:"dash",l:"대시보드"},{id:"members",l:"목표작성"},{id:"weekly",l:"주간체크"},{id:"graph",l:"그래프"},...(S.isAdmin?[{id:"settings",l:"설정"}]:[])];
+  const tabs=[{id:"dash",l:"대시보드"},{id:"members",l:"목표작성"},{id:"weekly",l:"주간체크"},{id:"graph",l:"그래프"},{id:"history",l:"조상님들"},...(S.isAdmin?[{id:"settings",l:"설정"}]:[])];
 
   const pc={rest1:{bg:"#E8E7F0",c:NAVY},rest2:{bg:"#E2E8F0",c:"#334155"},op:{bg:NAVY,c:"#fff"},ended:{bg:"#FEE2E2",c:RED},unknown:{bg:"#F1F5F9",c:MID},before_op:{bg:"#E2E8F0",c:"#334155"}}[CP.phase]||{bg:"#F1F5F9",c:MID};
 
@@ -252,6 +252,24 @@ function render(){
     });
   }
 
+  if(S.tab==="history"){
+html+='<div style="background:'+NAVY+';color:#fff;border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-weight:700;font-size:17px">12기 수행 결과</div><div style="font-size:11px;color:'+MID+';margin-top:2px">11주 운영 기록</div></div>';
+
+html+='<div class="card"><div style="font-weight:700;font-size:14px;color:'+NAVY+';margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid '+NAVY+'">명예의 전당 (총 수행률 100% 이상)</div>';
+var hof=[["조혜영","1목표","123%","운동 딱 1개만 들고 123%. 번외 3개는 그냥 사이드로 챙긴 것. 목표 1개로 이 수행률이면 할 말이 없음"],["반은경","4목표","117%","논문 10주차에 350% 한 방. 나머지도 꾸준히 챙기면서 4목표 모두 건드림"],["정지유","2목표","115%","운동+교재작업 2개를 11주 내내 100% 이상으로 유지. 욕심 안 부리고 확실하게 하는 타입"],["이경아","4목표","111%","독서가 3주차부터 거의 매주 200%. 독서가 4목표 전체 수행률을 끌어올리는 역할"],["박기두","2목표","110%","공부 확수가 5회인데 10주차에 200%. 조용히 제일 많이 한 사람"],["김효은","2목표","107%","공부 7주차에 250%. 운동은 0%도 있고 들쭉날쭉인데 공부가 묵묵히 수행률 방어"],["조복언","2목표","105%","운동 9주차 0%로 한 번 삐끗했다가 그냥 털고 일어남. 회복 속도가 남다름"],["이정석","2목표","102%","스터디 8주차 200%. 빼고는 매주 딱딱 맞춰서 수행. 크게 튀는 것도 없고 빠지는 것도 없음"],["김근영","4목표","101%","경제지 8주차 300%. 후반에 힘 끌어올리면서 4목표 합산 101% 딱 맞춤"],["이소연","2목표","100%","오르락내리락하면서도 결국 딱 100%로 마무리. 11주 동안 열심히 가감을 맞춰온 건지 계산한 건지 모르겠지만 결과는 완벽"]];
+hof.forEach(function(r,i){html+='<div style="padding:10px 0;'+(i>0?'border-top:1px solid #F8F9FC;':'')+'"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;font-size:14px;color:'+NAVY+'">'+r[0]+'</span><span style="font-size:11px;color:'+MID+'">'+r[1]+'</span></div><span style="font-weight:900;font-size:15px;color:'+NAVY+'">'+r[2]+'</span></div><div style="font-size:12px;color:#64748B;line-height:1.5">'+r[3]+'</div></div>'});
+html+='</div>';
+
+html+='<div class="card"><div style="font-weight:700;font-size:14px;color:'+GREEN+';margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid '+GREEN+'">통과 (총 수행률 85~99%)</div>';
+var pass=[["이보라","5목표","98%","공부 8주차 320%, 블로그 11주차 367%. 번외 2개는 전주 0%였지만 5목표 들고 98%면 관리력 인정"],["곽희라","4목표","98%","운동 1주차 233%로 화려하게 출발. 중간에 경제지 0%가 간간이 있었지만 결국 98%로 마무리"],["이다혜","3목표","94%","논문작업 10주차 233%. 논문에 에너지 몰아주는 스타일. 운동은 중후반에 0% 여러 번"],["켈빈","2목표","94%","공부 확수 7회로 공부에 집중. 운동 50%에서 150% 사이를 왔다갔다 하면서 종잡을 수가 없음"],["김상규","5목표","94%","콘텐츠 4주차 400%, 연구 초반 333%. 초반에 힘을 쫙 쓰고 후반은 다소 잦아드는 패턴"],["염진기","3목표","92%","논문읽기 8주차 300%. 연구 관련 목표에 집중하는 연구자 스타일. 운동은 조용히 꾸준"],["임창근","2목표","91%","마지막 주에 논문읽기 0%로 끝난 게 살짝 아쉽지만 그 전까지는 거의 완벽에 가까운 수행"],["김창우","3목표","88%","운동 10·11주차 연속 250%. 전반 내내 운동이 발목 잡다가 막판에 몰아치기로 만회"],["송종섭","3목표","87%","공부 11주차 600%. 11주 동안 모아뒀던 공부 에너지를 마지막 주에 한 번에 폭발"],["김영재","2목표","86%","공부 11주차 450%. 중반에 운동 4주 연속 0%로 바닥을 찍더니 막판 공부 폭발로 회복"],["김정혜","5목표","85%","논문 5주차 225%. 목표가 그룹에서 제일 많은데 이슬이슬하게 85% 통과. 이 목표 수로 버텨낸 것만으로도 충분"]];
+pass.forEach(function(r,i){html+='<div style="padding:10px 0;'+(i>0?'border-top:1px solid #F8F9FC;':'')+'"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;font-size:14px;color:'+NAVY+'">'+r[0]+'</span><span style="font-size:11px;color:'+MID+'">'+r[1]+'</span></div><span style="font-weight:900;font-size:15px;color:'+GREEN+'">'+r[2]+'</span></div><div style="font-size:12px;color:#64748B;line-height:1.5">'+r[3]+'</div></div>'});
+html+='</div>';
+
+html+='<div class="card" style="border-color:#FCA5A5"><div style="font-weight:700;font-size:14px;color:'+RED+';margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid '+RED+'">수료기준 미달</div>';
+var fail=[["강제완","4목표","30%","4목표 전 기간에 걸쳐 고르게 저조. 몰빵도 없고 꾸준함도 없는 전체적인 부재 상태"],["남유원","4목표","32%","5주차 이후 4목표 전부 0% 직행. 초반 반짝하다가 중반부터 완전히 다른 사람이 됨"],["김선희","2목표","73%","독서 초반에 200% 찍었는데 이후 완전 포기. 운동도 33%↔100% 널뛰기로 끝까지 불안정"],["박기택","2목표","76%","공부는 200% 주가 세 번. 성실하게 챙겼는데 운동이 61%에 머물면서 전체 발목 잡음"],["이용철","2목표","80%","공부는 91%로 성실하게 챙겼는데 운동이 33%를 반복하면서 전체 수행률 끌어내림. 13기 선택 기회 제공"],["김현철","1목표","79%","목표가 딱 1개인데 33% 찍은 주가 4번. 끝까지 운동 루틴을 못 잡은 아쉬운 마무리. 13기 선택 기회 제공"]];
+fail.forEach(function(r,i){html+='<div style="padding:10px 0;'+(i>0?'border-top:1px solid #F8F9FC;':'')+'"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;font-size:14px;color:'+NAVY+'">'+r[0]+'</span><span style="font-size:11px;color:'+MID+'">'+r[1]+'</span></div><span style="font-weight:900;font-size:15px;color:'+RED+'">'+r[2]+'</span></div><div style="font-size:12px;color:#64748B;line-height:1.5">'+r[3]+'</div></div>'});
+html+='</div>';
+}
   // ─── Settings ───
   if(S.tab==="settings"&&S.isAdmin){
     html+='<div class="card"><div style="font-weight:700;margin-bottom:14px;color:'+NAVY+';font-size:15px">운영 기간 설정</div>';
