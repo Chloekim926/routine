@@ -133,7 +133,7 @@ function render(){
       if(CP.phase===r.p)html+='<span class="period-dot"></span>';
       html+='<span style="font-size:13px;color:'+(CP.phase===r.p?NAVY:"#64748B")+';font-weight:'+(CP.phase===r.p?700:400)+'">'+r.l+'</span></div><span style="font-size:11px;color:'+MID+'">'+fmtDate(r.s)+' ~ '+fmtDate(r.e)+'</span></div>'});
     html+='</div>';
-    html+='<div style="text-align:center;padding:12px 0 14px;font-size:12px;color:#64748B;line-height:1.8"><div style="font-weight:600;color:'+NAVY+'">참여는 무료지만 루틴을 안하면 망신주는 방</div><div>루틴방 지원 @urbannn.jh · rlawjdfod@snu.ac.kr</div></div>';
+    html+='<div style="text-align:center;padding:12px 0 14px;font-size:12px;color:#64748B;line-height:1.8"><div style="font-weight:600;color:'+NAVY+'">건강하게 성장하자 루틴이 으른들</div><div>@urbannn.jh · rlawjdfod@snu.ac.kr</div></div>';
     html+='<div class="stat-grid">';
     [{l:"참여인원",v:D.members.length+"명"},{l:"진행주차",v:cfg.currentWeek+"주차"},{l:showGrades?"평균달성":"현재 상태",v:showGrades?pct(avgRate):CP.label}].forEach(s=>{html+='<div class="stat-box"><div class="stat-label">'+s.l+'</div><div class="stat-val" style="font-size:'+(showGrades?'22':'14')+'px">'+s.v+'</div></div>'});
     html+='</div>';
