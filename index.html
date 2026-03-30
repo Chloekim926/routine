@@ -133,7 +133,7 @@ function render(){
   const byGrp=[1,2,3,4].map(g=>({gid:g,...GC[g],members:mws.filter(m=>m.stats.groupId===g)}));
   const selMem=S.selId?mws.find(m=>m.id===S.selId):null;
   const avgRate=D.members.length?mws.reduce((s,m)=>s+m.stats.overallRate,0)/D.members.length:0;
-  const tabs=[{id:"dash",l:"대시보드"},{id:"members",l:"멤버"},{id:"weekly",l:"주간체크"},{id:"graph",l:"그래프"},...(S.isAdmin?[{id:"settings",l:"설정"}]:[])];
+  const tabs=[{id:"dash",l:"대시보드"},{id:"members",l:"목표작성"},{id:"weekly",l:"주간체크"},{id:"graph",l:"그래프"},...(S.isAdmin?[{id:"settings",l:"설정"}]:[])];
 
   const pc={rest1:{bg:"#E8E7F0",c:NAVY},rest2:{bg:"#E2E8F0",c:"#334155"},op:{bg:NAVY,c:"#fff"},ended:{bg:"#FEE2E2",c:RED},unknown:{bg:"#F1F5F9",c:MID},before_op:{bg:"#E2E8F0",c:"#334155"}}[CP.phase]||{bg:"#F1F5F9",c:MID};
 
