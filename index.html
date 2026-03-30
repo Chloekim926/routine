@@ -32,9 +32,9 @@ button{font-family:inherit}input{font-family:inherit}textarea{font-family:inheri
 .stat-label{font-size:10px;color:#94A3B8;font-weight:600}
 .stat-val{font-weight:900;font-size:22px;color:#1E1B4B;margin-top:2px}
 .group-header{padding:10px 14px;border-left:3px solid;display:flex;align-items:center;justify-content:space-between}
-.member-row{display:flex;align-items:center;padding:11px 14px;cursor:pointer}
+.member-row{padding:12px 14px;cursor:pointer}
 .member-row+.member-row{border-top:1px solid #F8F9FC}
-.rank-circle{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;margin-right:10px;flex-shrink:0}
+.rank-circle{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
 .overlay{position:fixed;inset:0;background:rgba(30,27,75,0.6);display:flex;align-items:center;justify-content:center;z-index:100}
 .overlay-bottom{align-items:flex-end}
 .modal{background:#fff;border-radius:14px;padding:24px;width:300px}
@@ -65,16 +65,21 @@ const NAVY="#1E1B4B",MID="#94A3B8",RED="#DC2626",GREEN="#10B981";
 const GC={1:{border:NAVY,text:NAVY,badge:"#E8E7F0",label:"S등급",range:"100% 이상"},2:{border:"#475569",text:"#334155",badge:"#E2E8F0",label:"A등급",range:"85~99%"},3:{border:MID,text:"#64748B",badge:"#F1F5F9",label:"B등급",range:"50~84%"},4:{border:RED,text:RED,badge:"#FEE2E2",label:"C등급",range:"50% 미만 / 개별목표 50% 미만"}};
 function mkData(){return{config:{totalWeeks:10,currentWeek:1,adminPw:"5115",periods:{rest1Start:"2026-03-30",rest1End:"2026-04-05",rest2Start:"2026-04-06",rest2End:"2026-04-12",opStart:"2026-04-13",opEnd:"2026-06-21"}},members:[],records:{}}}
 function getGroupId(r,gs){if(gs.some(g=>g.target>0&&g.rate<0.5)||r<0.5)return 4;if(r>=1)return 1;if(r>=0.85)return 2;return 3}
-function calcStats(m,rec,w){const gs=m.goals.map((g,gi)=>{let wc=0,ac=0;for(let i=1;i<=w;i++){const v=rec["w"+i]?.[m.id]?.[gi];if(v!=null&&v!==""){wc++;ac+=Math.max(0,+v)}}const t=wc*g.target;return{name:g.name,weeklyTarget:g.target,target:t,achieved:ac,weekCount:wc,rate:t>0?ac/t:0}});const tt=gs.reduce((s,g)=>s+g.target,0),ta=gs.reduce((s,g)=>s+g.achieved,0),or=tt>0?ta/tt:0;return{goalStats:gs,totalTarget:tt,totalAchieved:ta,overallRate:or,groupId:tt===0?4:getGroupId(or,gs)}}
+function calcStats(m,rec,w){const gs=m.goals.map((g,gi)=>{let wc=0,ac=0;for(let i=1;i<=w;i++){const v=rec["w"+i]?.[m.id]?.[gi];if(v!=null&&v!==""){wc++;ac+=Math.max(0,+v)}}const t=wc*g.target;return{name:g.name,detail:g.detail||"",weeklyTarget:g.target,target:t,achieved:ac,weekCount:wc,rate:t>0?ac/t:0}});const tt=gs.reduce((s,g)=>s+g.target,0),ta=gs.reduce((s,g)=>s+g.achieved,0),or=tt>0?ta/tt:0;return{goalStats:gs,totalTarget:tt,totalAchieved:ta,overallRate:or,groupId:tt===0?4:getGroupId(or,gs)}}
 function getWeeklyRates(m,rec,w){const r=[];for(let i=1;i<=w;i++){const rc=rec["w"+i]?.[m.id];if(!rc){r.push(null);continue}let t=0,a=0;m.goals.forEach((g,gi)=>{const v=rc[gi];if(v!=null&&v!==""){t+=g.target;a+=Math.max(0,+v)}});r.push(t>0?Math.round(a/t*100):null)}return r}
-function getCurrentPeriod(p){const n=new Date();n.setHours(0,0,0,0);const ck=(s,e)=>s&&e&&n>=new Date(s)&&n<=new Date(e);if(ck(p.rest1Start,p.rest1End))return{phase:"rest1",label:"안식주1 · 목표작성"};if(ck(p.rest2Start,p.rest2End))return{phase:"rest2",label:"안식주2 · 휴식"};if(p.opStart&&p.opEnd){const s=new Date(p.opStart),e=new Date(p.opEnd);if(n>=s&&n<=e)return{phase:"op",label:"운영기간 · "+(Math.floor((n-s)/6048e5)+1)+"주차"};if(n<s)return{phase:"before_op",label:"운영 시작 전"};if(n>e)return{phase:"ended",label:"운영 종료"}}return{phase:"unknown",label:"기간 미설정"}}
+function getCurrentPeriod(p){const n=new Date();n.setHours(0,0,0,0);const ck=(s,e)=>s&&e&&n>=new Date(s)&&n<=new Date(e);if(ck(p.rest1Start,p.rest1End))return{phase:"rest1",label:"안식주1 · 목표작성기간"};if(ck(p.rest2Start,p.rest2End))return{phase:"rest2",label:"안식주2 · 휴식"};if(p.opStart&&p.opEnd){const s=new Date(p.opStart),e=new Date(p.opEnd);if(n>=s&&n<=e)return{phase:"op",label:"운영기간 · "+(Math.floor((n-s)/6048e5)+1)+"주차"};if(n<s)return{phase:"before_op",label:"목표작성기간"};if(n>e)return{phase:"ended",label:"운영 종료"}}return{phase:"unknown",label:"기간 미설정"}}
 function fmtDate(d){return d?d.replace(/-/g,"."):"-"}
 function pct(r){return Math.round(r*100)+"%"}
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+// Goal label: "항목 세부기준 횟수회/주" or "항목 횟수회/주"
+function goalLabel(g){return esc(g.name)+(g.detail?' · '+esc(g.detail):'')+' '+g.target+'회/주'}
+function goalLabelShort(g){return esc(g.name)+(g.detail?' · '+esc(g.detail):'')}
+// Is operation period active?
+function isOpPhase(phase){return phase==="op"||phase==="ended"}
 
 function buildGoalCloud(members){
   const freq={};
-  members.forEach(m=>{m.goals.forEach(g=>{const n=g.name.trim();if(n)freq[n]=(freq[n]||0)+1})});
+  members.forEach(m=>{m.goals.forEach(g=>{const n=g.name.trim();if(n)freq[n]=(freq[n]||0)+1;if(g.detail){const d=g.detail.trim();if(d)freq[d]=(freq[d]||0)+1}})});
   const entries=Object.entries(freq).sort((a,b)=>b[1]-a[1]);
   if(!entries.length)return"";
   const maxF=entries[0][1];
@@ -105,6 +110,7 @@ function render(){
 
   const D=S.data,cfg=D.config,P=cfg.periods||{},CP=getCurrentPeriod(P);
   const goalLocked=CP.phase!=="rest1"&&CP.phase!=="unknown"&&CP.phase!=="before_op";
+  const showGrades=isOpPhase(CP.phase); // Only show grades during/after operation
   const mws=D.members.map(m=>({...m,stats:calcStats(m,D.records,cfg.currentWeek)})).sort((a,b)=>b.stats.overallRate-a.stats.overallRate);
   const byGrp=[1,2,3,4].map(g=>({gid:g,...GC[g],members:mws.filter(m=>m.stats.groupId===g)}));
   const selMem=S.selId?mws.find(m=>m.id===S.selId):null;
@@ -127,21 +133,39 @@ function render(){
       if(CP.phase===r.p)html+='<span class="period-dot"></span>';
       html+='<span style="font-size:13px;color:'+(CP.phase===r.p?NAVY:"#64748B")+';font-weight:'+(CP.phase===r.p?700:400)+'">'+r.l+'</span></div><span style="font-size:11px;color:'+MID+'">'+fmtDate(r.s)+' ~ '+fmtDate(r.e)+'</span></div>'});
     html+='</div>';
+
     html+='<div class="stat-grid">';
-    [{l:"참여인원",v:D.members.length+"명"},{l:"진행주차",v:cfg.currentWeek+"주차"},{l:"평균달성",v:pct(avgRate)}].forEach(s=>{html+='<div class="stat-box"><div class="stat-label">'+s.l+'</div><div class="stat-val">'+s.v+'</div></div>'});
+    [{l:"참여인원",v:D.members.length+"명"},{l:"진행주차",v:cfg.currentWeek+"주차"},{l:showGrades?"평균달성":"현재 상태",v:showGrades?pct(avgRate):CP.label}].forEach(s=>{html+='<div class="stat-box"><div class="stat-label">'+s.l+'</div><div class="stat-val" style="font-size:'+(showGrades?'22':'14')+'px">'+s.v+'</div></div>'});
     html+='</div>';
 
-    if(!D.members.length)html+='<div style="text-align:center;padding:56px 0;color:'+MID+'">멤버를 먼저 추가해</div>';
-    else{
+    if(!D.members.length){
+      html+='<div style="text-align:center;padding:56px 0;color:'+MID+'">멤버를 먼저 추가해</div>';
+    } else if(showGrades){
+      // ── Operation period: show grades ──
       byGrp.forEach(g=>{
         if(!g.members.length)return;
         html+='<div class="card-flush"><div class="group-header" style="border-color:'+g.border+';background:'+(g.gid===4?"#FEF2F2":"#F8F9FC")+'"><div><span style="font-weight:700;color:'+g.text+';font-size:14px">'+g.label+'</span><span style="font-size:11px;color:'+MID+';margin-left:8px">'+g.range+'</span></div><span style="font-size:11px;font-weight:700;color:'+g.text+';background:#fff;padding:2px 10px;border-radius:20px;border:1px solid '+g.border+'">'+g.members.length+'명</span></div>';
         g.members.forEach(m=>{const rk=mws.indexOf(m)+1;
-          html+='<div class="member-row" onclick="S.selId=\''+m.id+'\';S.modal=\'detail\';render()"><span class="rank-circle" style="background:'+(rk<=3?NAVY:"#E8E7F0")+';color:'+(rk<=3?"#fff":"#64748B")+'">'+rk+'</span><div style="flex:1"><span style="font-weight:600;font-size:14px;color:'+NAVY+'">'+esc(m.name)+'</span>'+(m.nickname?'<span style="font-size:11px;color:'+MID+';margin-left:6px">'+esc(m.nickname)+'</span>':'')+'</div><div style="text-align:right"><div style="font-weight:900;color:'+NAVY+';font-size:17px">'+pct(m.stats.overallRate)+'</div><div style="font-size:10px;color:'+MID+'">'+m.stats.totalAchieved+'/'+m.stats.totalTarget+'회</div></div></div>'});
+          html+='<div class="member-row" onclick="S.selId=\''+m.id+'\';S.modal=\'detail\';render()"><div style="display:flex;align-items:center"><span class="rank-circle" style="background:'+(rk<=3?NAVY:"#E8E7F0")+';color:'+(rk<=3?"#fff":"#64748B")+';margin-right:10px">'+rk+'</span><div style="flex:1"><span style="font-weight:600;font-size:14px;color:'+NAVY+'">'+esc(m.name)+'</span>'+(m.nickname?'<span style="font-size:11px;color:'+MID+';margin-left:6px">'+esc(m.nickname)+'</span>':'')+'</div><div style="text-align:right"><div style="font-weight:900;color:'+NAVY+';font-size:17px">'+pct(m.stats.overallRate)+'</div><div style="font-size:10px;color:'+MID+'">'+m.stats.totalAchieved+'/'+m.stats.totalTarget+'회</div></div></div></div>'});
         html+='</div>'});
-      // Goal word cloud at bottom
-      html+=buildGoalCloud(D.members);
+    } else {
+      // ── Pre-operation: show name / nickname / motto list ──
+      html+='<div class="card-flush">';
+      html+='<div style="padding:10px 14px;background:#F8F9FC;border-bottom:1px solid #E8E7F0"><span style="font-weight:700;font-size:14px;color:'+NAVY+'">13기 멤버</span><span style="font-size:11px;color:'+MID+';margin-left:8px">'+D.members.length+'명</span></div>';
+      mws.forEach((m,i)=>{
+        html+='<div class="member-row" onclick="S.selId=\''+m.id+'\';S.modal=\'detail\';render()"'+(i>0?' style="border-top:1px solid #F8F9FC"':'')+'>';
+        html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:'+(m.motto?'4':'0')+'px">';
+        html+='<span style="font-weight:700;font-size:14px;color:'+NAVY+'">'+esc(m.name)+'</span>';
+        if(m.nickname)html+='<span style="font-size:12px;color:'+MID+'">'+esc(m.nickname)+'</span>';
+        html+='</div>';
+        if(m.motto)html+='<div style="font-size:12px;color:#64748B;line-height:1.4;padding-left:2px">'+esc(m.motto)+'</div>';
+        // Show goals as tags
+        if(m.goals.length)html+='<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">'+m.goals.map(g=>'<span class="goal-tag">'+goalLabel(g)+'</span>').join('')+'</div>';
+        html+='</div>'});
+      html+='</div>';
     }
+    // Goal word cloud
+    if(D.members.length)html+=buildGoalCloud(D.members);
   }
 
   // ─── Members (목표작성) ───
@@ -154,39 +178,37 @@ function render(){
       const gc=GC[m.stats.groupId];
       html+='<div class="card">';
 
-      // ── Row 1: Name + Nickname (inline) + Rate ──
+      // Name + Nickname inline
       html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
       html+='<div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0">';
       html+='<span style="font-weight:700;font-size:15px;color:'+NAVY+';flex-shrink:0">'+esc(m.name)+'</span>';
-
       if(S.nicknameEdit[m.id]!==undefined){
-        // Inline edit mode
         html+='<input class="inp" style="flex:1;padding:4px 8px;font-size:12px;min-width:60px" placeholder="별명" data-sid="nick_'+m.id+'" value="'+esc(S.nicknameEdit[m.id]||"")+'" oninput="S.nicknameEdit[\''+m.id+'\']=this.value">';
         html+='<button class="btn" style="padding:4px 10px;font-size:11px;flex-shrink:0" onclick="saveNick(\''+m.id+'\')">저장</button>';
-        html+='<button style="color:'+MID+';border:none;background:none;cursor:pointer;font-size:16px;flex-shrink:0" onclick="delete S.nicknameEdit[\''+m.id+'\'];render()">✕</button>';
+        html+='<button style="color:'+MID+';border:none;background:none;cursor:pointer;font-size:14px;flex-shrink:0" onclick="delete S.nicknameEdit[\''+m.id+'\'];render()">✕</button>';
       } else {
-        if(m.nickname)html+='<span style="font-size:12px;color:'+MID+';white-space:nowrap">'+esc(m.nickname)+'</span>';
-        html+='<button style="border:1px solid #E8E7F0;background:none;border-radius:4px;padding:2px 6px;font-size:10px;color:'+MID+';cursor:pointer;flex-shrink:0;white-space:nowrap" onclick="S.nicknameEdit[\''+m.id+'\']='+"'"+esc(m.nickname||"")+"'"+';render()">'+(m.nickname?"수정":"별명")+'</button>';
+        if(m.nickname)html+='<span style="font-size:12px;color:'+MID+'">'+esc(m.nickname)+'</span>';
+        html+='<button style="border:1px solid #E8E7F0;background:none;border-radius:4px;padding:2px 6px;font-size:10px;color:'+MID+';cursor:pointer;flex-shrink:0" onclick="S.nicknameEdit[\''+m.id+'\']='+"'"+esc(m.nickname||"")+"'"+';render()">'+(m.nickname?"수정":"별명")+'</button>';
       }
       html+='</div>';
-      html+='<span style="background:'+gc.badge+';color:'+gc.text+';padding:2px 10px;border-radius:20px;font-size:12px;font-weight:700;flex-shrink:0;margin-left:8px">'+pct(m.stats.overallRate)+'</span>';
+      if(showGrades)html+='<span style="background:'+gc.badge+';color:'+gc.text+';padding:2px 10px;border-radius:20px;font-size:12px;font-weight:700;flex-shrink:0;margin-left:8px">'+pct(m.stats.overallRate)+'</span>';
       html+='</div>';
 
-      // ── Motto / 다짐 ──
+      // Motto
       if(S.mottoEdit[m.id]!==undefined){
-        html+='<div style="margin-bottom:8px"><textarea class="inp" style="font-size:12px;padding:8px 12px;min-height:50px" placeholder="13기 나의 다짐 / 좌우명을 적어봐" data-sid="motto_'+m.id+'" oninput="S.mottoEdit[\''+m.id+'\']=this.value">'+esc(S.mottoEdit[m.id]||"")+'</textarea><div style="display:flex;gap:6px;margin-top:6px"><button class="btn" style="padding:6px 14px;font-size:11px" onclick="saveMotto(\''+m.id+'\')">저장</button><button class="btn-outline" style="padding:6px 10px;font-size:11px" onclick="delete S.mottoEdit[\''+m.id+'\'];render()">취소</button></div></div>';
+        html+='<div style="margin-bottom:8px"><textarea class="inp" style="font-size:12px;padding:8px 12px;min-height:50px" placeholder="13기 나의 다짐 / 좌우명" data-sid="motto_'+m.id+'" oninput="S.mottoEdit[\''+m.id+'\']=this.value">'+esc(S.mottoEdit[m.id]||"")+'</textarea><div style="display:flex;gap:6px;margin-top:6px"><button class="btn" style="padding:6px 14px;font-size:11px" onclick="saveMotto(\''+m.id+'\')">저장</button><button class="btn-outline" style="padding:6px 10px;font-size:11px" onclick="delete S.mottoEdit[\''+m.id+'\'];render()">취소</button></div></div>';
       } else if(m.motto){
         html+='<div style="background:#F8F9FC;border:1px solid #E8E7F0;border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:12px;color:#1E1B4B;line-height:1.5;cursor:pointer" onclick="S.mottoEdit[\''+m.id+'\']='+"'"+esc(m.motto).replace(/'/g,"\\'")+"'"+';render()"><span style="font-size:10px;color:'+MID+';display:block;margin-bottom:2px">나의 다짐</span>'+esc(m.motto)+'</div>';
       } else {
         html+='<button class="btn-outline" style="padding:4px 10px;font-size:11px;margin-bottom:8px" onclick="S.mottoEdit[\''+m.id+'\']=\'\';render()">다짐 작성하기</button>';
       }
 
-      // ── Goals ──
+      // Goals (항목 · 세부기준 횟수회/주)
       html+='<div style="display:flex;flex-wrap:wrap;gap:5px">';
-      m.goals.forEach(g=>{html+='<span class="goal-tag">'+esc(g.name)+' '+g.target+'회/주</span>'});
+      m.goals.forEach(g=>{html+='<span class="goal-tag">'+goalLabel(g)+'</span>'});
       html+='</div>';
 
-      // ── Actions ──
+      // Actions
       html+='<div style="display:flex;gap:8px;margin-top:10px">';
       html+='<button class="btn-outline" style="flex:1" onclick="openGoals(\''+m.id+'\')">목표 편집'+(goalLocked&&!S.isAdmin?" (잠김)":"")+'</button>';
       if(S.isAdmin){
@@ -213,7 +235,7 @@ function render(){
       m.goals.forEach((g,gi)=>{
         const sv=rec[gi],iv=S.weekInputs[m.id]?.[gi],dv=iv!==undefined?iv:sv;
         const rate=sv!==undefined?Math.min(+sv/g.target,1):null;
-        html+='<div style="display:flex;align-items:center;margin-bottom:'+(gi<m.goals.length-1?"10":"0")+'px"><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:500;color:'+NAVY+'">'+esc(g.name)+'</span><span style="font-size:11px;color:'+MID+'">목표 '+g.target+'회</span></div>';
+        html+='<div style="display:flex;align-items:center;margin-bottom:'+(gi<m.goals.length-1?"10":"0")+'px"><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:500;color:'+NAVY+'">'+goalLabelShort(g)+'</span><span style="font-size:11px;color:'+MID+'">목표 '+g.target+'회</span></div>';
         if(rate!==null)html+='<div class="progress-bar"><div class="progress-fill" style="width:'+Math.min(rate*100,100)+'%;background:'+(rate>=1?GREEN:NAVY)+'"></div></div>';
         html+='</div>';
         if(S.isAdmin)html+='<input type="number" min="0" data-sid="wk_'+m.id+'_'+gi+'" value="'+(dv!=null?dv:"")+'" placeholder="0" style="width:52px;margin-left:10px;text-align:center;padding:6px;border:1px solid #E8E7F0;border-radius:6px;font-size:14px;background:#fff;outline:none" oninput="setWeekInput(\''+m.id+'\','+gi+',this.value)">';
@@ -235,13 +257,13 @@ function render(){
       html+='</div>'});
   }
 
-  // ─── History (조상님들) ───
+  // ─── History ───
   if(S.tab==="history"){
     html+='<div style="background:'+NAVY+';color:#fff;border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-weight:700;font-size:17px">12기 수행 결과</div><div style="font-size:11px;color:'+MID+';margin-top:2px">11주 운영 기록</div></div>';
     var sections=[
-      {title:"명예의 전당 (총 수행률 100% 이상)",color:NAVY,border:NAVY,data:[["조혜영","1목표","123%","운동 딱 1개만 들고 123%. 번외 3개는 그냥 사이드로 챙긴 것. 목표 1개로 이 수행률이면 할 말이 없음"],["반은경","4목표","117%","논문 10주차에 350% 한 방. 나머지도 꾸준히 챙기면서 4목표 모두 건드림"],["정지유","2목표","115%","운동+교재작업 2개를 11주 내내 100% 이상으로 유지. 욕심 안 부리고 확실하게 하는 타입"],["이경아","4목표","111%","독서가 3주차부터 거의 매주 200%. 독서가 4목표 전체 수행률을 끌어올리는 역할"],["박기두","2목표","110%","공부 확수가 5회인데 10주차에 200%. 조용히 제일 많이 한 사람"],["김효은","2목표","107%","공부 7주차에 250%. 운동은 0%도 있고 들쭉날쭉인데 공부가 묵묵히 수행률 방어"],["조복언","2목표","105%","운동 9주차 0%로 한 번 삐끗했다가 그냥 털고 일어남. 회복 속도가 남다름"],["이정석","2목표","102%","스터디 8주차 200%. 빼고는 매주 딱딱 맞춰서 수행. 크게 튀는 것도 없고 빠지는 것도 없음"],["김근영","4목표","101%","경제지 8주차 300%. 후반에 힘 끌어올리면서 4목표 합산 101% 딱 맞춤"],["이소연","2목표","100%","오르락내리락하면서도 결국 딱 100%로 마무리. 11주 동안 열심히 가감을 맞춰온 건지 계산한 건지 모르겠지만 결과는 완벽"]]},
-      {title:"통과 (총 수행률 85~99%)",color:GREEN,border:GREEN,data:[["이보라","5목표","98%","공부 8주차 320%, 블로그 11주차 367%. 번외 2개는 전주 0%였지만 5목표 들고 98%면 관리력 인정"],["곽희라","4목표","98%","운동 1주차 233%로 화려하게 출발. 중간에 경제지 0%가 간간이 있었지만 결국 98%로 마무리"],["이다혜","3목표","94%","논문작업 10주차 233%. 논문에 에너지 몰아주는 스타일. 운동은 중후반에 0% 여러 번"],["켈빈","2목표","94%","공부 확수 7회로 공부에 집중. 운동 50%에서 150% 사이를 왔다갔다 하면서 종잡을 수가 없음"],["김상규","5목표","94%","콘텐츠 4주차 400%, 연구 초반 333%. 초반에 힘을 쫙 쓰고 후반은 다소 잦아드는 패턴"],["염진기","3목표","92%","논문읽기 8주차 300%. 연구 관련 목표에 집중하는 연구자 스타일. 운동은 조용히 꾸준"],["임창근","2목표","91%","마지막 주에 논문읽기 0%로 끝난 게 살짝 아쉽지만 그 전까지는 거의 완벽에 가까운 수행"],["김창우","3목표","88%","운동 10·11주차 연속 250%. 전반 내내 운동이 발목 잡다가 막판에 몰아치기로 만회"],["송종섭","3목표","87%","공부 11주차 600%. 11주 동안 모아뒀던 공부 에너지를 마지막 주에 한 번에 폭발"],["김영재","2목표","86%","공부 11주차 450%. 중반에 운동 4주 연속 0%로 바닥을 찍더니 막판 공부 폭발로 회복"],["김정혜","5목표","85%","논문 5주차 225%. 목표가 그룹에서 제일 많은데 이슬이슬하게 85% 통과. 이 목표 수로 버텨낸 것만으로도 충분"]]},
-      {title:"수료기준 미달",color:RED,border:"#FCA5A5",data:[["강제완","4목표","30%","4목표 전 기간에 걸쳐 고르게 저조. 몰빵도 없고 꾸준함도 없는 전체적인 부재 상태"],["남유원","4목표","32%","5주차 이후 4목표 전부 0% 직행. 초반 반짝하다가 중반부터 완전히 다른 사람이 됨"],["김선희","2목표","73%","독서 초반에 200% 찍었는데 이후 완전 포기. 운동도 33%↔100% 널뛰기로 끝까지 불안정"],["박기택","2목표","76%","공부는 200% 주가 세 번. 성실하게 챙겼는데 운동이 61%에 머물면서 전체 발목 잡음"],["이용철","2목표","80%","공부는 91%로 성실하게 챙겼는데 운동이 33%를 반복하면서 전체 수행률 끌어내림. 13기 선택 기회 제공"],["김현철","1목표","79%","목표가 딱 1개인데 33% 찍은 주가 4번. 끝까지 운동 루틴을 못 잡은 아쉬운 마무리. 13기 선택 기회 제공"]]}
+      {title:"명예의 전당 (총 수행률 100% 이상)",color:NAVY,border:NAVY,data:[["조혜영","1목표","123%","운동 딱 1개만 들고 123%. 번외 3개는 그냥 사이드로 챙긴 것"],["반은경","4목표","117%","논문 10주차에 350% 한 방. 나머지도 꾸준히 챙기면서 4목표 모두 건드림"],["정지유","2목표","115%","운동+교재작업 2개를 11주 내내 100% 이상으로 유지"],["이경아","4목표","111%","독서가 3주차부터 거의 매주 200%. 4목표 전체 수행률을 끌어올림"],["박기두","2목표","110%","공부 확수가 5회인데 10주차에 200%. 조용히 제일 많이 한 사람"],["김효은","2목표","107%","공부 7주차에 250%. 운동은 들쭉날쭉인데 공부가 묵묵히 수행률 방어"],["조복언","2목표","105%","운동 9주차 0%로 한 번 삐끗했다가 그냥 털고 일어남"],["이정석","2목표","102%","스터디 8주차 200%. 매주 딱딱 맞춰서 수행"],["김근영","4목표","101%","경제지 8주차 300%. 후반에 힘 끌어올려서 4목표 합산 101% 딱 맞춤"],["이소연","2목표","100%","오르락내리락하면서도 결국 딱 100%로 마무리"]]},
+      {title:"통과 (총 수행률 85~99%)",color:GREEN,border:GREEN,data:[["이보라","5목표","98%","공부 8주차 320%, 블로그 11주차 367%. 5목표 들고 98%면 관리력 인정"],["곽희라","4목표","98%","운동 1주차 233%로 화려하게 출발. 결국 98%로 마무리"],["이다혜","3목표","94%","논문작업 10주차 233%. 논문에 에너지 몰아주는 스타일"],["켈빈","2목표","94%","공부 확수 7회로 공부에 집중. 운동은 종잡을 수 없음"],["김상규","5목표","94%","콘텐츠 4주차 400%, 연구 초반 333%. 초반 몰아치기형"],["염진기","3목표","92%","논문읽기 8주차 300%. 연구 관련 목표에 집중하는 스타일"],["임창근","2목표","91%","마지막 주 논문읽기 0% 빼면 거의 완벽에 가까운 수행"],["김창우","3목표","88%","운동 10·11주차 연속 250%. 막판 몰아치기로 만회"],["송종섭","3목표","87%","공부 11주차 600%. 마지막 주에 한 번에 폭발"],["김영재","2목표","86%","공부 11주차 450%. 막판 공부 폭발로 회복"],["김정혜","5목표","85%","논문 5주차 225%. 목표가 제일 많은데 이슬이슬하게 85% 통과"]]},
+      {title:"수료기준 미달",color:RED,border:"#FCA5A5",data:[["강제완","4목표","30%","4목표 전 기간에 걸쳐 고르게 저조"],["남유원","4목표","32%","5주차 이후 4목표 전부 0% 직행"],["김선희","2목표","73%","독서 초반 200% 이후 완전 포기. 운동도 널뛰기"],["박기택","2목표","76%","공부는 성실했는데 운동이 61%에서 발목 잡음"],["이용철","2목표","80%","공부 91%로 성실했는데 운동 33% 반복. 13기 선택 기회 제공"],["김현철","1목표","79%","목표 1개인데 33% 찍은 주가 4번. 13기 선택 기회 제공"]]}
     ];
     sections.forEach(sec=>{
       html+='<div class="card"'+(sec.color===RED?' style="border-color:#FCA5A5"':'')+'><div style="font-weight:700;font-size:14px;color:'+sec.color+';margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid '+sec.border+'">'+sec.title+'</div>';
@@ -279,13 +301,30 @@ function render(){
     const mem=D.members.find(m=>m.id===S.selId);
     html+='<div class="overlay overlay-bottom" onclick="S.modal=null;render()"><div class="modal-bottom" onclick="event.stopPropagation()"><div style="font-weight:800;font-size:18px;margin-bottom:4px;color:'+NAVY+'">'+(mem?esc(mem.name):"")+'의 목표</div>';
     if(goalLocked&&!S.isAdmin)html+='<div style="background:#F8F9FC;border:1px solid #E8E7F0;border-radius:8px;padding:8px 12px;margin-bottom:14px;font-size:12px;color:'+NAVY+'">목표 입력 기간이 지나서 수정할 수 없어. 방장에게 요청해.</div>';
-    else html+='<div style="font-size:12px;color:'+MID+';margin-bottom:14px">운동(2회 이상)은 필수이며 최소 2회 | 최대 6개</div>';
+    else html+='<div style="font-size:12px;color:'+MID+';margin-bottom:14px">운동(2회 이상)은 필수 | 최대 6개 | 항목 · 세부기준 · 횟수 입력</div>';
+
+    // Goal form: 항목 / 세부기준 / 횟수
     S.goalForm.forEach((g,i)=>{
-      const cn=!(goalLocked&&!S.isAdmin)&&i!==0,ct=!(goalLocked&&!S.isAdmin);
-      html+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><input class="inp" style="flex:2;background:'+(cn?"#fff":"#F8F9FC")+'" placeholder="목표명" data-sid="gn_'+i+'" value="'+esc(g.name)+'" '+(cn?'':'disabled')+' oninput="S.goalForm['+i+'].name=this.value"><input type="number" min="'+(i===0?2:1)+'" class="inp" style="width:52px;text-align:center;padding:10px 4px;background:'+(ct?"#fff":"#F8F9FC")+'" data-sid="gt_'+i+'" value="'+g.target+'" '+(ct?'':'disabled')+' oninput="S.goalForm['+i+'].target=Math.max('+(i===0?2:1)+',+this.value)"><span style="font-size:11px;color:'+MID+';white-space:nowrap">회/주</span>';
-      if(i>0&&ct)html+='<button style="color:'+RED+';border:none;background:none;cursor:pointer;font-size:22px;padding:0 4px;line-height:1;flex-shrink:0" onclick="S.goalForm.splice('+i+',1);render()">×</button>';
-      html+='</div>'});
-    if(S.goalForm.length<6&&!(goalLocked&&!S.isAdmin))html+='<button style="width:100%;padding:10px;border:1px dashed '+MID+';border-radius:8px;background:none;cursor:pointer;color:'+MID+';margin-bottom:6px;font-size:13px" onclick="S.goalForm.push({name:\'\',target:1});render()">+ 목표 추가 ('+S.goalForm.length+'/6)</button>';
+      const cn=!(goalLocked&&!S.isAdmin)&&i!==0;
+      const ct=!(goalLocked&&!S.isAdmin);
+      html+='<div style="margin-bottom:10px;padding:10px;background:#F8F9FC;border-radius:8px;border:1px solid #E8E7F0">';
+      html+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">';
+      html+='<span style="font-size:11px;color:'+MID+';min-width:32px">항목</span>';
+      html+='<input class="inp" style="flex:1;padding:8px 10px;background:'+(cn?"#fff":"#F1F5F9")+'" placeholder="예: 운동" data-sid="gn_'+i+'" value="'+esc(g.name)+'" '+(cn?'':'disabled')+' oninput="S.goalForm['+i+'].name=this.value">';
+      if(i>0&&ct)html+='<button style="color:'+RED+';border:none;background:none;cursor:pointer;font-size:20px;padding:0 4px;line-height:1;flex-shrink:0" onclick="S.goalForm.splice('+i+',1);render()">×</button>';
+      html+='</div>';
+      html+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">';
+      html+='<span style="font-size:11px;color:'+MID+';min-width:32px">기준</span>';
+      html+='<input class="inp" style="flex:1;padding:8px 10px;background:'+(ct?"#fff":"#F1F5F9")+'" placeholder="예: 헬스 or 러닝 30분 이상" data-sid="gd_'+i+'" value="'+esc(g.detail||"")+'" '+(ct?'':'disabled')+' oninput="S.goalForm['+i+'].detail=this.value">';
+      html+='</div>';
+      html+='<div style="display:flex;gap:8px;align-items:center">';
+      html+='<span style="font-size:11px;color:'+MID+';min-width:32px">횟수</span>';
+      html+='<input type="number" min="'+(i===0?2:1)+'" class="inp" style="width:70px;padding:8px 10px;text-align:center;background:'+(ct?"#fff":"#F1F5F9")+'" data-sid="gt_'+i+'" value="'+g.target+'" '+(ct?'':'disabled')+' oninput="S.goalForm['+i+'].target=Math.max('+(i===0?2:1)+',+this.value)">';
+      html+='<span style="font-size:12px;color:'+MID+'">회/주</span>';
+      html+='</div></div>';
+    });
+
+    if(S.goalForm.length<6&&!(goalLocked&&!S.isAdmin))html+='<button style="width:100%;padding:10px;border:1px dashed '+MID+';border-radius:8px;background:none;cursor:pointer;color:'+MID+';margin-bottom:6px;font-size:13px" onclick="S.goalForm.push({name:\'\',detail:\'\',target:1});render()">+ 목표 추가 ('+S.goalForm.length+'/6)</button>';
     html+='<div style="display:flex;gap:8px;margin-top:14px"><button class="btn-outline" style="flex:1;padding:12px;border-radius:10px;font-size:14px" onclick="S.modal=null;render()">닫기</button>';
     if(!(goalLocked&&!S.isAdmin)||S.isAdmin)html+='<button class="btn" style="flex:1;padding:12px;border-radius:10px;font-size:14px" onclick="saveGoals()">저장</button>';
     html+='</div></div></div>';
@@ -294,13 +333,26 @@ function render(){
   if(S.modal==="detail"&&selMem){
     const gc=GC[selMem.stats.groupId],wd=getWeeklyRates(selMem,D.records,cfg.currentWeek),has=wd.some(d=>d!==null);
     html+='<div class="overlay overlay-bottom" onclick="S.modal=null;render()"><div class="modal-bottom" style="max-height:85vh" onclick="event.stopPropagation()">';
-    html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px"><div><div style="font-weight:800;font-size:22px;color:'+NAVY+'">'+esc(selMem.name)+'</div>'+(selMem.nickname?'<div style="font-size:13px;color:'+MID+';margin-top:2px">'+esc(selMem.nickname)+'</div>':'')+'<span style="background:'+gc.badge+';color:'+gc.text+';padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;margin-top:6px">'+gc.label+'</span></div><div style="text-align:right"><div style="font-size:36px;font-weight:900;color:'+NAVY+';line-height:1">'+pct(selMem.stats.overallRate)+'</div><div style="font-size:11px;color:'+MID+';margin-top:4px">'+selMem.stats.totalAchieved+'/'+selMem.stats.totalTarget+'회 누적</div></div></div>';
+    html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px"><div><div style="font-weight:800;font-size:22px;color:'+NAVY+'">'+esc(selMem.name)+'</div>'+(selMem.nickname?'<div style="font-size:13px;color:'+MID+';margin-top:2px">'+esc(selMem.nickname)+'</div>':'');
+    if(showGrades)html+='<span style="background:'+gc.badge+';color:'+gc.text+';padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;margin-top:6px">'+gc.label+'</span>';
+    html+='</div>';
+    if(showGrades){html+='<div style="text-align:right"><div style="font-size:36px;font-weight:900;color:'+NAVY+';line-height:1">'+pct(selMem.stats.overallRate)+'</div><div style="font-size:11px;color:'+MID+';margin-top:4px">'+selMem.stats.totalAchieved+'/'+selMem.stats.totalTarget+'회 누적</div></div>'}
+    html+='</div>';
     if(selMem.motto)html+='<div style="background:#F8F9FC;border:1px solid #E8E7F0;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:'+NAVY+';line-height:1.5"><span style="font-size:10px;color:'+MID+';display:block;margin-bottom:3px">나의 다짐</span>'+esc(selMem.motto)+'</div>';
-    if(has)html+='<div style="background:'+NAVY+';border-radius:10px;padding:12px 8px;margin-bottom:16px"><div style="font-size:11px;color:'+MID+';font-weight:600;padding:0 8px 6px">주간 추이</div><div style="height:120px"><canvas id="chart_detail_'+selMem.id+'"></canvas></div></div>';
-    html+='<div style="border-top:1px solid #E8E7F0;padding-top:14px"><div style="font-size:12px;color:'+MID+';font-weight:700;margin-bottom:12px;letter-spacing:0.5px">목표별 달성률</div>';
-    selMem.stats.goalStats.forEach(gs=>{const c=gs.rate>=1?GREEN:gs.rate>=0.5?NAVY:RED;
-      html+='<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:14px;font-weight:600;color:'+NAVY+'">'+esc(gs.name)+'</span><span style="font-size:14px;font-weight:800;color:'+c+'">'+pct(gs.rate)+'</span></div><div style="height:5px;background:#E8E7F0;border-radius:3px;overflow:hidden"><div style="height:5px;width:'+Math.min(gs.rate*100,100)+'%;background:'+c+';border-radius:3px"></div></div><div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:10px;color:'+MID+'">'+gs.achieved+'회 / '+gs.weeklyTarget+'회x'+gs.weekCount+'주 = 목표 '+gs.target+'회</span>'+(gs.target>0&&gs.rate<0.5?'<span style="font-size:10px;color:'+RED+';font-weight:700">C등급 사유</span>':'')+'</div></div>'});
-    html+='</div><button style="width:100%;background:#F8F9FC;color:'+NAVY+';border:none;border-radius:10px;padding:12px;font-weight:700;cursor:pointer;margin-top:8px;font-size:14px" onclick="S.modal=null;render()">닫기</button></div></div>';
+
+    // Goals list
+    html+='<div style="margin-bottom:14px">';
+    selMem.goals.forEach(g=>{html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span class="goal-tag">'+goalLabel(g)+'</span></div>'});
+    html+='</div>';
+
+    if(has&&showGrades){
+      html+='<div style="background:'+NAVY+';border-radius:10px;padding:12px 8px;margin-bottom:16px"><div style="font-size:11px;color:'+MID+';font-weight:600;padding:0 8px 6px">주간 추이</div><div style="height:120px"><canvas id="chart_detail_'+selMem.id+'"></canvas></div></div>';
+      html+='<div style="border-top:1px solid #E8E7F0;padding-top:14px"><div style="font-size:12px;color:'+MID+';font-weight:700;margin-bottom:12px">목표별 달성률</div>';
+      selMem.stats.goalStats.forEach(gs=>{const c=gs.rate>=1?GREEN:gs.rate>=0.5?NAVY:RED;
+        html+='<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:14px;font-weight:600;color:'+NAVY+'">'+goalLabelShort(gs)+'</span><span style="font-size:14px;font-weight:800;color:'+c+'">'+pct(gs.rate)+'</span></div><div style="height:5px;background:#E8E7F0;border-radius:3px;overflow:hidden"><div style="height:5px;width:'+Math.min(gs.rate*100,100)+'%;background:'+c+';border-radius:3px"></div></div><div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:10px;color:'+MID+'">'+gs.achieved+'회 / '+gs.weeklyTarget+'회x'+gs.weekCount+'주 = 목표 '+gs.target+'회</span>'+(gs.target>0&&gs.rate<0.5?'<span style="font-size:10px;color:'+RED+';font-weight:700">C등급 사유</span>':'')+'</div></div>'});
+      html+='</div>';
+    }
+    html+='<button style="width:100%;background:#F8F9FC;color:'+NAVY+';border:none;border-radius:10px;padding:12px;font-weight:700;cursor:pointer;margin-top:8px;font-size:14px" onclick="S.modal=null;render()">닫기</button></div></div>';
   }
 
   if(S.toast)html+='<div class="toast">'+S.toast+'</div>';
@@ -308,19 +360,17 @@ function render(){
 
   if(activeId){const el=document.querySelector('[data-sid="'+activeId+'"]');if(el){el.focus();try{el.setSelectionRange(selStart,selEnd)}catch(e){}}}
 
-  // Charts
   if(S.tab==="graph")mws.forEach(m=>{const cv=document.getElementById("chart_"+m.id);if(!cv)return;const wd=getWeeklyRates(m,D.records,cfg.currentWeek);if(S.charts[m.id])S.charts[m.id].destroy();S.charts[m.id]=new Chart(cv,{type:"line",data:{labels:wd.map((_,i)=>(i+1)+"주"),datasets:[{data:wd,borderColor:NAVY,backgroundColor:"rgba(30,27,75,0.08)",borderWidth:2.5,pointBackgroundColor:NAVY,pointBorderColor:"#fff",pointBorderWidth:2,pointRadius:4,fill:true,tension:0.3,spanGaps:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:NAVY,cornerRadius:8,callbacks:{label:c=>c.parsed.y!=null?c.parsed.y+"%":"-"}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},color:MID}},y:{min:0,max:120,grid:{color:"#F1F5F9"},ticks:{font:{size:10},color:MID,callback:v=>v+"%"}}}}})});
   if(S.modal==="detail"&&selMem){const cv=document.getElementById("chart_detail_"+selMem.id);if(cv){const wd=getWeeklyRates(selMem,D.records,cfg.currentWeek),k="d_"+selMem.id;if(S.charts[k])S.charts[k].destroy();S.charts[k]=new Chart(cv,{type:"line",data:{labels:wd.map((_,i)=>(i+1)+"주"),datasets:[{data:wd,borderColor:"#fff",backgroundColor:"rgba(255,255,255,0.1)",borderWidth:2,pointBackgroundColor:"#fff",pointRadius:3,fill:true,tension:0.3,spanGaps:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:"#fff",titleColor:NAVY,bodyColor:NAVY,cornerRadius:8,callbacks:{label:c=>c.parsed.y!=null?c.parsed.y+"%":"-"}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},color:MID}},y:{min:0,max:120,grid:{color:"rgba(255,255,255,0.08)"},ticks:{font:{size:9},color:"#64748B",callback:v=>v+"%"}}}}})}}
 }
 
-// ─── Actions ───
 function doLogin(){if(S.pwInput===S.data.config.adminPw){S.isAdmin=true;S.modal=null;S.pwInput="";showToast("방장 모드 활성화")}else showToast("비밀번호 틀림")}
-function addMember(){if(!S.newName.trim())return;const n=S.newName.trim();save({...S.data,members:[...S.data.members,{id:Date.now().toString(),name:n,nickname:"",motto:"",goals:[{name:"운동",target:2}]}]});S.newName="";showToast(n+" 추가됨")}
+function addMember(){if(!S.newName.trim())return;const n=S.newName.trim();save({...S.data,members:[...S.data.members,{id:Date.now().toString(),name:n,nickname:"",motto:"",goals:[{name:"운동",detail:"",target:2}]}]});S.newName="";showToast(n+" 추가됨")}
 function saveNick(id){save({...S.data,members:S.data.members.map(m=>m.id===id?{...m,nickname:S.nicknameEdit[id]||""}:m)});delete S.nicknameEdit[id];showToast("별명 저장")}
 function saveMotto(id){save({...S.data,members:S.data.members.map(m=>m.id===id?{...m,motto:S.mottoEdit[id]||""}:m)});delete S.mottoEdit[id];showToast("다짐 저장")}
 function delMember(id){save({...S.data,members:S.data.members.filter(m=>m.id!==id)});S.deleteConfirm=null}
-function openGoals(id){const m=S.data.members.find(m=>m.id===id);S.selId=id;S.goalForm=m.goals.map(g=>({...g}));S.modal="goals";render()}
-function saveGoals(){const v=S.goalForm.filter(g=>g.name.trim()&&g.target>0);if(!v.length)return;if(v[0].target<2){showToast("운동은 최소 2회");return}save({...S.data,members:S.data.members.map(m=>m.id===S.selId?{...m,goals:v}:m)});S.modal=null;showToast("목표 저장됨")}
+function openGoals(id){const m=S.data.members.find(m=>m.id===id);S.selId=id;S.goalForm=m.goals.map(g=>({name:g.name,detail:g.detail||"",target:g.target}));S.modal="goals";render()}
+function saveGoals(){const v=S.goalForm.filter(g=>g.name.trim()&&g.target>0).map(g=>({name:g.name.trim(),detail:(g.detail||"").trim(),target:g.target}));if(!v.length)return;if(v[0].target<2){showToast("운동은 최소 2회");return}save({...S.data,members:S.data.members.map(m=>m.id===S.selId?{...m,goals:v}:m)});S.modal=null;showToast("목표 저장됨")}
 function setWeekInput(mid,gi,val){if(!S.weekInputs[mid])S.weekInputs[mid]={};S.weekInputs[mid][gi]=val}
 function saveWeekly(){const d={...S.data};if(!d.records)d.records={};const wk="w"+d.config.currentWeek;if(!d.records[wk])d.records[wk]={};Object.entries(S.weekInputs).forEach(([mid,gs])=>{if(!d.records[wk][mid])d.records[wk][mid]={};Object.entries(gs).forEach(([gi,v])=>{if(v!==""&&v!==undefined)d.records[wk][mid][gi]=+v})});save(d);S.weekInputs={};showToast("저장 완료")}
 function savePeriods(){save({...S.data,config:{...S.data.config,periods:{...S.periodEdit}}});S.periodEdit=null;showToast("기간 저장됨")}
