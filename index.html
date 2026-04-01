@@ -16,8 +16,8 @@ button{font-family:inherit}input{font-family:inherit}textarea{font-family:inheri
 .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;margin-top:6px}
 .btn-login{background:transparent;color:#94A3B8;border:1px solid #475569;border-radius:8px;padding:5px 14px;font-size:12px;cursor:pointer}
 .btn-admin{background:#fff;color:#1E1B4B;border:none;border-radius:20px;padding:5px 14px;font-weight:800;font-size:12px;cursor:pointer}
-.tabs{display:flex;background:#fff;border-bottom:1px solid #E8E7F0;position:sticky;top:0;z-index:20}
-.tabs button{flex:1;padding:11px 0;border:none;background:none;cursor:pointer;font-size:12px;white-space:nowrap;border-bottom:2px solid transparent;color:#94A3B8;font-weight:400}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #E8E7F0;position:sticky;top:0;z-index:20;overflow-x:auto}
+.tabs button{flex:1;padding:11px 0;border:none;background:none;cursor:pointer;font-size:12px;white-space:nowrap;border-bottom:2px solid transparent;color:#94A3B8;font-weight:400;min-width:0}
 .tabs button.active{color:#1E1B4B;font-weight:700;border-bottom-color:#1E1B4B}
 .content{padding:14px}
 .card{background:#fff;border-radius:10px;padding:16px;margin-bottom:10px;border:1px solid #E8E7F0}
@@ -51,6 +51,14 @@ button{font-family:inherit}input{font-family:inherit}textarea{font-family:inheri
 .loading-screen{display:flex;align-items:center;justify-content:center;height:100vh;background:#1E1B4B;color:#fff;font-size:15px}
 .word-cloud{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 10px;padding:14px 8px}
 .word-cloud span{display:inline-block;font-weight:600;line-height:1.4}
+.rule-section{margin-bottom:14px}
+.rule-section-title{font-weight:700;font-size:14px;color:#1E1B4B;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #1E1B4B;display:flex;align-items:center;gap:6px}
+.rule-item{font-size:13px;color:#334155;line-height:1.7;padding:4px 0 4px 12px;border-left:2px solid #E8E7F0}
+.rule-item+.rule-item{margin-top:6px}
+.rule-sub{font-size:12px;color:#64748B;padding-left:16px;line-height:1.6;margin-top:2px}
+.rule-highlight{background:#F8F9FC;border:1px solid #E8E7F0;border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:13px;color:#1E1B4B;line-height:1.6}
+.rule-warn{background:#FEF2F2;border:1px solid #FCA5A5;border-radius:8px;padding:12px 14px;font-size:12px;color:#DC2626;line-height:1.6}
+.rule-emoji{font-size:16px}
 </style>
 </head>
 <body>
@@ -90,6 +98,79 @@ function buildGoalCloud(members){
   return h+'</div></div>';
 }
 
+function buildRulesTab(){
+  var h='';
+  // Header
+  h+='<div style="background:'+NAVY+';color:#fff;border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-weight:700;font-size:17px">\uD83D\uDCCB 운영 규칙</div><div style="font-size:11px;color:'+MID+';margin-top:2px">인증 전 반드시 숙지</div></div>';
+
+  // 핵심 규칙 요약
+  h+='<div class="card"><div class="rule-section"><div class="rule-section-title"><span class="rule-emoji">\uD83C\uDFAF</span> 핵심 규칙</div>';
+  h+='<div class="rule-highlight">';
+  h+='<div style="font-weight:700;margin-bottom:6px">수료 기준</div>';
+  h+='주간 목표 달성률 <strong>85% 이상</strong> + 개별항목 달성률 <strong>50% 이상</strong>';
+  h+='</div>';
+  var coreRules=[
+    '운동 주 <strong>2회 이상</strong> 필수',
+    '최대 <strong>6개 항목</strong> 설정 가능<div class="rule-sub">ex) 운동 3회 / 책읽기 0.25권 1회 / 공부 30분 3회 = 3개 항목</div>',
+    '주간 인증 주기 : 매주 <strong>월요일 오전 3시 ~ 다음 월요일 오전 3시</strong>',
+    '병가, 출장, 컨디션저하를 고려하여 목표 작성 <strong>(예외적용 없음)</strong>'
+  ];
+  coreRules.forEach(function(r){h+='<div class="rule-item">'+r+'</div>'});
+  h+='</div></div>';
+
+  // 운동 인증
+  h+='<div class="card"><div class="rule-section"><div class="rule-section-title"><span class="rule-emoji">\uD83C\uDFCB\uFE0F</span> 운동 인증</div>';
+  h+='<div style="font-size:12px;color:'+RED+';font-weight:600;margin-bottom:8px">\u26A0\uFE0F 날짜/시간 필수</div>';
+  h+='<div class="rule-item"><strong>방법 1</strong> : 타임스탬프 운동시설 사진, 시작\xB7끝 <strong>30분 이상</strong> 간격 촬영 (2장)</div>';
+  h+='<div class="rule-item"><strong>방법 2</strong> : 운동량 측정앱(삼성헬스 등) 또는 출석체크 앱</div>';
+  h+='</div>';
+
+  // 걷기·등산·러닝
+  h+='<div class="rule-section"><div style="font-weight:600;font-size:13px;color:'+NAVY+';margin-bottom:8px;padding-left:2px">\uD83D\uDEB6 걷기 \xB7 등산 \xB7 러닝</div>';
+  h+='<div class="rule-highlight">1회 <strong>4km 이상</strong>, 시간\xB7거리\xB7날짜 포함된 앱 캡처 필수</div>';
+  h+='<div class="rule-item"><strong>러닝</strong><div class="rule-sub">4 ~ 19.99km \u2192 1회<br>20km 이상 (하프~풀마라톤) \u2192 2회 (1회로 해도 자유)</div></div>';
+  h+='<div class="rule-item"><strong>등산</strong><div class="rule-sub">2~4시간 / 300~600m 상승 (근교 산) \u2192 1회<br>4시간+ / 600m+ 상승 (종주형 포함) \u2192 2회 (1회로 해도 자유)</div></div>';
+  h+='</div>';
+
+  // 하루 2회 이상
+  h+='<div class="rule-section"><div style="font-weight:600;font-size:13px;color:'+NAVY+';margin-bottom:8px;padding-left:2px">\u23F0 하루 2회 이상 인증 조건</div>';
+  h+='<div class="rule-item">다른 종목을 이어하는 경우<div class="rule-sub">ex) 헬스 후 골프, 헬스 후 요가</div></div>';
+  h+='<div class="rule-item">같은 종목일 경우 중간 <strong>2시간 이상</strong> 간격<div class="rule-sub">ex) 4-5시 헬스1, 7-8시 헬스2</div></div>';
+  h+='</div></div>';
+
+  // 공부 인증
+  h+='<div class="card"><div class="rule-section"><div class="rule-section-title"><span class="rule-emoji">\uD83D\uDCDA</span> 공부 인증</div>';
+  h+='<div class="rule-item">날짜 포함 <strong>타임스탬프 사진</strong> : 공부내용 촬영 필수<div class="rule-sub">필기\xB7화면 등, 일부 모자이크 가능 (전부 모자이크 시 인증 제외)</div></div>';
+  h+='<div class="rule-item">읽기\xB7강연청취의 경우 공부한 내용에 대한 <strong>1줄 이상 작성 필수</strong><div class="rule-sub">책 or 화면 촬영해서 올리고 끝 \u2715 \u2192 필기 or 내용 정리 필요</div></div>';
+  h+='</div></div>';
+
+  // 독서/논문읽기
+  h+='<div class="card"><div class="rule-section"><div class="rule-section-title"><span class="rule-emoji">\uD83D\uDCD6</span> 독서 / 논문읽기 인증</div>';
+  h+='<div class="rule-item">날짜 포함 <strong>타임스탬프 사진</strong></div>';
+  h+='<div class="rule-item"><strong>1줄 이상 소감</strong> 작성</div>';
+  h+='</div></div>';
+
+  // 습관 인증
+  h+='<div class="card"><div class="rule-section"><div class="rule-section-title"><span class="rule-emoji">\u2728</span> 습관 인증 (번외)</div>';
+  h+='<div class="rule-highlight" style="background:#F0FDF4;border-color:#BBF7D0">명상, 영양제, 건강식, 일기 등 단순 습관<br>\uD83D\uDC49 <strong>달성률 계산 제외</strong> \xB7 자기만족용<br>\uD83D\uDC49 인증사진 필수 (방법은 자유)<br>\uD83D\uDC49 운동\xB7공부 인증과 <strong>혼합 업로드 불가</strong></div>';
+  h+='</div></div>';
+
+  // 기타 안내
+  h+='<div class="card"><div class="rule-section"><div class="rule-section-title"><span class="rule-emoji">\uD83D\uDCE2</span> 기타 안내</div>';
+  var etcRules=[
+    '루틴방은 <strong>본명</strong>으로 참여',
+    '정식 운영 중 <strong>사전 통보 없이 이탈</strong> 시 다음 기수 참여 제한',
+    '인증 방법 미숙지 또는 규칙 반복 위반 시 참여 제한 가능',
+    '번개\xB7소모임\xB7개별 톡방 개설은 자유'
+  ];
+  etcRules.forEach(function(r){h+='<div class="rule-item">'+r+'</div>'});
+  h+='</div>';
+  h+='<div class="rule-warn" style="margin-top:10px">\u26A0\uFE0F 노션에 적혀있는 내용을 계속 틀리거나 질문하면 별도 안내 없이 <strong>노카운트</strong> 됩니다.</div>';
+  h+='</div>';
+
+  return h;
+}
+
 var S={data:null,loading:true,tab:"dash",isAdmin:false,isMember:false,modal:null,selId:null,toast:"",newName:"",goalForm:[],weekInputs:{},newPw:"",pwInput:"",deleteConfirm:null,nicknameEdit:{},mottoEdit:{},periodEdit:null,charts:{}};
 
 DOC_REF.onSnapshot(function(doc){
@@ -116,7 +197,7 @@ function render(){
   var byGrp=[1,2,3,4].map(function(gid){return Object.assign({gid:gid},GC[gid],{members:mws.filter(function(m){return m.stats.groupId===gid})})});
   var selMem=S.selId?mws.find(function(m){return m.id===S.selId}):null;
   var avgRate=D.members.length?mws.reduce(function(s,m){return s+m.stats.overallRate},0)/D.members.length:0;
-  var tabs=[{id:"dash",l:"13기현황"},{id:"members",l:"목표작성"},{id:"weekly",l:"주간체크"},{id:"graph",l:"그래프"},{id:"history",l:"조상님들"}];
+  var tabs=[{id:"dash",l:"13기현황"},{id:"members",l:"목표작성"},{id:"weekly",l:"주간체크"},{id:"graph",l:"그래프"},{id:"rules",l:"규칙"},{id:"history",l:"조상님들"}];
   if(S.isAdmin)tabs.push({id:"settings",l:"설정"});
   var pcMap={rest1:{bg:"#E8E7F0",c:NAVY},rest2:{bg:"#E2E8F0",c:"#334155"},op:{bg:NAVY,c:"#fff"},ended:{bg:"#FEE2E2",c:RED},unknown:{bg:"#F1F5F9",c:MID},before_op:{bg:"#E2E8F0",c:"#334155"}};
   var pc=pcMap[CP.phase]||pcMap.unknown;
@@ -157,7 +238,6 @@ function render(){
           html+='<div class="member-row" onclick="S.selId=\''+m.id+'\';S.modal=\'detail\';render()"><div style="display:flex;align-items:center"><span class="rank-circle" style="background:'+(rk<=3?NAVY:"#E8E7F0")+';color:'+(rk<=3?"#fff":"#64748B")+';margin-right:10px">'+rk+'</span><div style="flex:1"><span style="font-weight:600;font-size:14px;color:'+NAVY+'">'+dn(m.name)+'</span>'+(m.nickname?'<span style="font-size:11px;color:'+MID+';margin-left:6px">'+esc(m.nickname)+'</span>':'')+'</div><div style="text-align:right"><div style="font-weight:900;color:'+NAVY+';font-size:17px">'+pct(m.stats.overallRate)+'</div><div style="font-size:10px;color:'+MID+'">'+m.stats.totalAchieved+'/'+m.stats.totalTarget+'회</div></div></div></div>'});
         html+='</div>'});
     } else {
-      // Pre-operation: name -> nickname -> motto (name always first)
       html+='<div class="card-flush">';
       html+='<div style="padding:10px 14px;background:#F8F9FC;border-bottom:1px solid #E8E7F0"><span style="font-weight:700;font-size:14px;color:'+NAVY+'">13기 멤버</span><span style="font-size:11px;color:'+MID+';margin-left:8px">'+D.members.length+'명</span></div>';
       mws.forEach(function(m,i){
@@ -255,6 +335,11 @@ function render(){
       if(has)html+='<div class="chart-container"><canvas id="chart_'+m.id+'"></canvas></div>';
       else html+='<div style="padding:24px 16px;text-align:center;color:'+MID+';font-size:13px">아직 기록 없음</div>';
       html+='</div>'});
+  }
+
+  // ─── Rules (규칙) ───
+  else if(S.tab==="rules"){
+    html+=buildRulesTab();
   }
 
   // ─── History (조상님들) - names masked ───
