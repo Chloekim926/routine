@@ -67,6 +67,30 @@ button{font-family:inherit}input{font-family:inherit}textarea{font-family:inheri
 .chart-legend-dot{width:10px;height:3px;border-radius:2px;display:inline-block}
 .goal-stat-inline{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:#64748B;margin-right:6px}
 .goal-stat-inline b{font-weight:700}
+/* PC 버전 (화면 너비 900px 이상) */
+@media (min-width:900px){
+  body{max-width:1040px;background:#EEF0F7}
+  .header{padding:22px 28px 16px;border-radius:0 0 14px 14px}
+  .header h1{font-size:20px}
+  .tabs{border-radius:10px;margin:14px 20px 0;border:1px solid #E8E7F0}
+  .tabs button{font-size:13px;padding:14px 0}
+  .content{padding:18px 20px 40px}
+  .stat-grid{grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+  .stat-val{font-size:28px}
+  .chart-container{height:220px}
+  .chart-legend{font-size:12px}
+  .dk-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+  .dk-grid-2>.card,.dk-grid-2>.card-flush{margin-bottom:0}
+  .dk-full{grid-column:1 / -1}
+  .modal-bottom{max-width:580px;border-radius:14px;margin-bottom:40px;max-height:85vh}
+  .overlay-bottom{align-items:center}
+  .member-row{padding:14px 16px}
+}
+@media (min-width:1200px){
+  body{max-width:1200px}
+  .dk-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:start}
+  .dk-grid-3>.card,.dk-grid-3>.card-flush{margin-bottom:0}
+}
 </style>
 </head>
 <body>
@@ -245,6 +269,7 @@ function render(){
       html+='<div style="display:flex;gap:8px;margin-bottom:10px"><input class="inp" style="flex:1" placeholder="멤버 이름 입력" data-sid="newName" value="'+esc(S.newName)+'" oninput="S.newName=this.value" onkeydown="if(event.key===\'Enter\')addMember()"><button class="btn" onclick="addMember()">추가</button></div>';
     }
     if(!D.members.length)html+='<div style="text-align:center;padding:40px 0;color:'+MID+'">멤버가 없어</div>';
+    if(D.members.length)html+='<div class="dk-grid-2">';
     mws.forEach(function(m){
       var gc=GC[m.stats.groupId];
       html+='<div class="card">';
@@ -283,9 +308,8 @@ function render(){
       }
       html+='</div></div>';
     });
+    if(D.members.length)html+='</div>';
   }
-
-  // ─── Weekly (컴팩트 + 항목수 오름차순) ───
   else if(S.tab==="weekly"){
     html+='<div style="background:'+NAVY+';color:#fff;border-radius:10px;padding:14px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700;font-size:17px">'+cfg.currentWeek+'주차 수행체크</div><div style="font-size:11px;color:'+MID+';margin-top:2px">항목수 적은 순으로 표시</div></div>';
     if(S.isAdmin)html+='<span style="background:#fff;color:'+NAVY+';padding:4px 10px;border-radius:20px;font-size:11px;font-weight:800">편집 모드</span>';
@@ -293,6 +317,7 @@ function render(){
     if(!D.members.length)html+='<div style="text-align:center;padding:40px 0;color:'+MID+'">멤버를 먼저 추가해</div>';
     var weeklySorted=D.members.slice().sort(function(a,b){var d=a.goals.length-b.goals.length;return d!==0?d:a.name.localeCompare(b.name,"ko")});
     var lastGoalCount=-1;
+    if(D.members.length)html+='<div class="dk-grid-2">';
     weeklySorted.forEach(function(m){
       var dispName=m.nickname?dn(m.name)+" ("+esc(m.nickname)+")":dn(m.name);
       var rec=(D.records["w"+cfg.currentWeek]&&D.records["w"+cfg.currentWeek][m.id])||{};
@@ -302,7 +327,7 @@ function render(){
       var wkRate=wkT>0?Math.round(wkA/wkT*100):null;
       // 그룹 구분선
       if(m.goals.length!==lastGoalCount){
-        html+='<div style="font-size:11px;color:'+MID+';font-weight:600;padding:6px 4px 4px">'+m.goals.length+'목표</div>';
+        html+='<div class="dk-full" style="font-size:11px;color:'+MID+';font-weight:600;padding:6px 4px 4px">'+m.goals.length+'목표</div>';
         lastGoalCount=m.goals.length;
       }
       html+='<div class="card" style="padding:12px 14px;margin-bottom:8px">';
@@ -331,6 +356,7 @@ function render(){
       });
       html+='</div></div>';
     });
+    if(D.members.length)html+='</div>';
     if(S.isAdmin&&D.members.length)html+='<button class="btn" style="width:100%;padding:14px;font-size:15px;margin-top:8px;border-radius:10px" onclick="saveWeekly()">'+cfg.currentWeek+'주차 저장</button>';
   }
 
@@ -341,9 +367,10 @@ function render(){
     else {
       var graphSorted=mws.slice().sort(function(a,b){var d=a.goals.length-b.goals.length;return d!==0?d:b.stats.overallRate-a.stats.overallRate});
       var lastGC=-1;
+      html+='<div class="dk-grid-2">';
       graphSorted.forEach(function(m){
         if(m.goals.length!==lastGC){
-          html+='<div style="font-size:11px;color:'+MID+';font-weight:600;padding:6px 4px 4px;margin-top:4px">'+m.goals.length+'목표</div>';
+          html+='<div class="dk-full" style="font-size:11px;color:'+MID+';font-weight:600;padding:6px 4px 4px;margin-top:4px">'+m.goals.length+'목표</div>';
           lastGC=m.goals.length;
         }
         var wd=getWeeklyRates(m,D.records,cfg.currentWeek),has=wd.some(function(d){return d!==null});
@@ -367,10 +394,9 @@ function render(){
         }
         html+='</div>';
       });
+      html+='</div>';
     }
   }
-
-  // ─── Rules ───
   else if(S.tab==="rules"){
     html+=buildRulesTab();
   }
