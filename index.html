@@ -42,7 +42,7 @@ button{font-family:inherit}input{font-family:inherit}textarea{font-family:inheri
 .progress-bar{height:4px;background:#E8E7F0;border-radius:4px;overflow:hidden}
 .progress-fill{height:100%;border-radius:4px;transition:width 0.3s}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1E1B4B;color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;font-weight:700;z-index:200;white-space:nowrap}
-.chart-container{padding:0 4px 10px;height:160px}
+.chart-container{padding:6px 4px 10px;height:180px}
 .chart-container canvas{width:100%!important;height:100%!important}
 .period-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
 .period-row+.period-row{border-top:1px solid #F8F9FC}
@@ -59,6 +59,14 @@ button{font-family:inherit}input{font-family:inherit}textarea{font-family:inheri
 .rule-highlight{background:#F8F9FC;border:1px solid #E8E7F0;border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:13px;color:#1E1B4B;line-height:1.6}
 .rule-warn{background:#FEF2F2;border:1px solid #FCA5A5;border-radius:8px;padding:12px 14px;font-size:12px;color:#DC2626;line-height:1.6}
 .rule-emoji{font-size:16px}
+.wk-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;background:#F8F9FC;padding:4px 9px;border-radius:6px;border:1px solid #E8E7F0;line-height:1.2;white-space:nowrap}
+.wk-pill input{width:36px;text-align:center;padding:2px 3px;border:1px solid #E8E7F0;border-radius:4px;font-size:12px;background:#fff;font-weight:700;outline:none}
+.wk-pill input:focus{border-color:#1E1B4B}
+.chart-legend{display:flex;flex-wrap:wrap;gap:6px 10px;padding:4px 12px 10px;font-size:11px}
+.chart-legend-item{display:inline-flex;align-items:center;gap:4px}
+.chart-legend-dot{width:10px;height:3px;border-radius:2px;display:inline-block}
+.goal-stat-inline{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:#64748B;margin-right:6px}
+.goal-stat-inline b{font-weight:700}
 </style>
 </head>
 <body>
@@ -70,21 +78,22 @@ button{font-family:inherit}input{font-family:inherit}textarea{font-family:inheri
 firebase.initializeApp({apiKey:"AIzaSyD8ZMyHhrL7tiCNyhTSxBXWdGxqUg8XwF8",authDomain:"routine-ca0ee.firebaseapp.com",projectId:"routine-ca0ee",storageBucket:"routine-ca0ee.firebasestorage.app",messagingSenderId:"845375711200",appId:"1:845375711200:web:b7a68f8963860a26432d85"});
 var db=firebase.firestore(),DOC_REF=db.collection("routine").doc("main");
 var NAVY="#1E1B4B",MID="#94A3B8",RED="#DC2626",GREEN="#10B981";
+var GOAL_COLORS=["#1E1B4B","#10B981","#F59E0B","#8B5CF6","#EC4899","#14B8A6"];
 var GC={1:{border:NAVY,text:NAVY,badge:"#E8E7F0",label:"S등급",range:"100% 이상"},2:{border:"#475569",text:"#334155",badge:"#E2E8F0",label:"A등급",range:"85~99%"},3:{border:MID,text:"#64748B",badge:"#F1F5F9",label:"B등급",range:"50~84%"},4:{border:RED,text:RED,badge:"#FEE2E2",label:"C등급",range:"50% 미만 / 개별목표 50% 미만"}};
 function mkData(){return{config:{totalWeeks:10,currentWeek:1,adminPw:"5115",periods:{rest1Start:"2026-03-30",rest1End:"2026-04-05",rest2Start:"2026-04-06",rest2End:"2026-04-12",opStart:"2026-04-13",opEnd:"2026-06-21"}},members:[],records:{}}}
 function getGroupId(r,gs){if(gs.some(function(g){return g.target>0&&g.rate<0.5})||r<0.5)return 4;if(r>=1)return 1;if(r>=0.85)return 2;return 3}
 function calcStats(m,rec,w){var gs=m.goals.map(function(g,gi){var wc=0,ac=0;for(var i=1;i<=w;i++){var v=rec["w"+i]&&rec["w"+i][m.id]?rec["w"+i][m.id][gi]:undefined;if(v!=null&&v!==""){wc++;ac+=Math.max(0,+v)}}var t=wc*g.target;return{name:g.name,detail:g.detail||"",weeklyTarget:g.target,target:t,achieved:ac,weekCount:wc,rate:t>0?ac/t:0}});var tt=gs.reduce(function(s,g){return s+g.target},0),ta=gs.reduce(function(s,g){return s+g.achieved},0),or=tt>0?ta/tt:0;return{goalStats:gs,totalTarget:tt,totalAchieved:ta,overallRate:or,groupId:tt===0?4:getGroupId(or,gs)}}
 function getWeeklyRates(m,rec,w){var r=[];for(var i=1;i<=w;i++){var rc=rec["w"+i]?rec["w"+i][m.id]:undefined;if(!rc){r.push(null);continue}var t=0,a=0;m.goals.forEach(function(g,gi){var v=rc[gi];if(v!=null&&v!==""){t+=g.target;a+=Math.max(0,+v)}});r.push(t>0?Math.round(a/t*100):null)}return r}
+function getPerGoalWeeklyRates(m,rec,w){return m.goals.map(function(g,gi){var arr=[];for(var i=1;i<=w;i++){var rc=rec["w"+i]?rec["w"+i][m.id]:undefined;if(!rc||rc[gi]==null||rc[gi]===""){arr.push(null);continue}arr.push(g.target>0?Math.round(Math.max(0,+rc[gi])/g.target*100):null)}return arr})}
 function getCurrentPeriod(p){var n=new Date();n.setHours(0,0,0,0);function ck(s,e){return s&&e&&n>=new Date(s)&&n<=new Date(e)}if(ck(p.rest1Start,p.rest1End))return{phase:"rest1",label:"안식주1 \xB7 목표작성기간"};if(ck(p.rest2Start,p.rest2End))return{phase:"rest2",label:"안식주2 \xB7 휴식"};if(p.opStart&&p.opEnd){var s=new Date(p.opStart),e=new Date(p.opEnd);if(n>=s&&n<=e)return{phase:"op",label:"운영기간 \xB7 "+(Math.floor((n-s)/6048e5)+1)+"주차"};if(n<s)return{phase:"before_op",label:"목표작성기간"};if(n>e)return{phase:"ended",label:"운영 종료"}}return{phase:"unknown",label:"기간 미설정"}}
 function fmtDate(d){return d?d.replace(/-/g,"."):"-"}
 function pct(r){return Math.round(r*100)+"%"}
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
-function maskName(name){if(!name)return"";var n=name.trim();if(n.length<=1)return n;if(n.length===2)return n[0]+"*";return n[0]+"*".repeat(n.length-2)+n[n.length-1]}
-function dn(name){return(S.isMember||S.isAdmin)?esc(name):esc(maskName(name))}
-function dnRaw(name){return(S.isMember||S.isAdmin)?name:maskName(name)}
+function dn(name){return esc(name||"")}
 function goalLabel(g){return esc(g.name)+(g.detail?" \xB7 "+esc(g.detail):"")+' '+g.target+'회/주'}
 function goalLabelShort(g){return esc(g.name)+(g.detail?" \xB7 "+esc(g.detail):"")}
 function isOpPhase(phase){return phase==="op"||phase==="ended"}
+function goalRateColor(r){return r>=1?GREEN:(r>=0.5?NAVY:RED)}
 
 function buildGoalCloud(members){
   var freq={};
@@ -100,78 +109,39 @@ function buildGoalCloud(members){
 
 function buildRulesTab(){
   var h='';
-  // Header
   h+='<div style="background:'+NAVY+';color:#fff;border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-weight:700;font-size:17px">\uD83D\uDCCB 운영 규칙</div><div style="font-size:11px;color:'+MID+';margin-top:2px">인증 전 반드시 숙지</div></div>';
-
-  // 핵심 규칙 요약
   h+='<div class="card"><div class="rule-section"><div class="rule-section-title"><span class="rule-emoji">\uD83C\uDFAF</span> 핵심 규칙</div>';
-  h+='<div class="rule-highlight">';
-  h+='<div style="font-weight:700;margin-bottom:6px">수료 기준</div>';
-  h+='주간 목표 달성률 <strong>85% 이상</strong> + 개별항목 달성률 <strong>50% 이상</strong>';
-  h+='</div>';
-  var coreRules=[
-    '운동 주 <strong>2회 이상</strong> 필수',
-    '최대 <strong>6개 항목</strong> 설정 가능<div class="rule-sub">ex) 운동 3회 / 책읽기 0.25권 1회 / 공부 30분 3회 = 3개 항목</div>',
-    '주간 인증 주기 : 매주 <strong>월요일 오전 3시 ~ 다음 월요일 오전 3시</strong>',
-    '병가, 출장, 컨디션저하를 고려하여 목표 작성 <strong>(예외적용 없음)</strong>'
-  ];
+  h+='<div class="rule-highlight"><div style="font-weight:700;margin-bottom:6px">수료 기준</div>주간 목표 달성률 <strong>85% 이상</strong> + 개별항목 달성률 <strong>50% 이상</strong></div>';
+  var coreRules=['운동 주 <strong>2회 이상</strong> 필수','최대 <strong>6개 항목</strong> 설정 가능<div class="rule-sub">ex) 운동 3회 / 책읽기 0.25권 1회 / 공부 30분 3회 = 3개 항목</div>','주간 인증 주기 : 매주 <strong>월요일 오전 3시 ~ 다음 월요일 오전 3시</strong>','병가, 출장, 컨디션저하를 고려하여 목표 작성 <strong>(예외적용 없음)</strong>'];
   coreRules.forEach(function(r){h+='<div class="rule-item">'+r+'</div>'});
   h+='</div></div>';
-
-  // 운동 인증
   h+='<div class="card"><div class="rule-section"><div class="rule-section-title"><span class="rule-emoji">\uD83C\uDFCB\uFE0F</span> 운동 인증</div>';
   h+='<div style="font-size:12px;color:'+RED+';font-weight:600;margin-bottom:8px">\u26A0\uFE0F 날짜/시간 필수</div>';
   h+='<div class="rule-item"><strong>방법 1</strong> : 타임스탬프 운동시설 사진, 시작\xB7끝 <strong>30분 이상</strong> 간격 촬영 (2장)</div>';
-  h+='<div class="rule-item"><strong>방법 2</strong> : 운동량 측정앱(삼성헬스 등) 또는 출석체크 앱</div>';
-  h+='</div>';
-
-  // 걷기·등산·러닝
+  h+='<div class="rule-item"><strong>방법 2</strong> : 운동량 측정앱(삼성헬스 등) 또는 출석체크 앱</div></div>';
   h+='<div class="rule-section"><div style="font-weight:600;font-size:13px;color:'+NAVY+';margin-bottom:8px;padding-left:2px">\uD83D\uDEB6 걷기 \xB7 등산 \xB7 러닝</div>';
   h+='<div class="rule-highlight">1회 <strong>4km 이상</strong>, 시간\xB7거리\xB7날짜 포함된 앱 캡처 필수</div>';
   h+='<div class="rule-item"><strong>러닝</strong><div class="rule-sub">4 ~ 19.99km \u2192 1회<br>20km 이상 (하프~풀마라톤) \u2192 2회 (1회로 해도 자유)</div></div>';
-  h+='<div class="rule-item"><strong>등산</strong><div class="rule-sub">2~4시간 / 300~600m 상승 (근교 산) \u2192 1회<br>4시간+ / 600m+ 상승 (종주형 포함) \u2192 2회 (1회로 해도 자유)</div></div>';
-  h+='</div>';
-
-  // 하루 2회 이상
+  h+='<div class="rule-item"><strong>등산</strong><div class="rule-sub">2~4시간 / 300~600m 상승 (근교 산) \u2192 1회<br>4시간+ / 600m+ 상승 (종주형 포함) \u2192 2회 (1회로 해도 자유)</div></div></div>';
   h+='<div class="rule-section"><div style="font-weight:600;font-size:13px;color:'+NAVY+';margin-bottom:8px;padding-left:2px">\u23F0 하루 2회 이상 인증 조건</div>';
   h+='<div class="rule-item">다른 종목을 이어하는 경우<div class="rule-sub">ex) 헬스 후 골프, 헬스 후 요가</div></div>';
-  h+='<div class="rule-item">같은 종목일 경우 중간 <strong>2시간 이상</strong> 간격<div class="rule-sub">ex) 4-5시 헬스1, 7-8시 헬스2</div></div>';
-  h+='</div></div>';
-
-  // 공부 인증
+  h+='<div class="rule-item">같은 종목일 경우 중간 <strong>2시간 이상</strong> 간격<div class="rule-sub">ex) 4-5시 헬스1, 7-8시 헬스2</div></div></div></div>';
   h+='<div class="card"><div class="rule-section"><div class="rule-section-title"><span class="rule-emoji">\uD83D\uDCDA</span> 공부 인증</div>';
   h+='<div class="rule-item">날짜 포함 <strong>타임스탬프 사진</strong> : 공부내용 촬영 필수<div class="rule-sub">필기\xB7화면 등, 일부 모자이크 가능 (전부 모자이크 시 인증 제외)</div></div>';
-  h+='<div class="rule-item">읽기\xB7강연청취의 경우 공부한 내용에 대한 <strong>1줄 이상 작성 필수</strong><div class="rule-sub">책 or 화면 촬영해서 올리고 끝 \u2715 \u2192 필기 or 내용 정리 필요</div></div>';
-  h+='</div></div>';
-
-  // 독서/논문읽기
+  h+='<div class="rule-item">읽기\xB7강연청취의 경우 공부한 내용에 대한 <strong>1줄 이상 작성 필수</strong><div class="rule-sub">책 or 화면 촬영해서 올리고 끝 \u2715 \u2192 필기 or 내용 정리 필요</div></div></div></div>';
   h+='<div class="card"><div class="rule-section"><div class="rule-section-title"><span class="rule-emoji">\uD83D\uDCD6</span> 독서 / 논문읽기 인증</div>';
   h+='<div class="rule-item">날짜 포함 <strong>타임스탬프 사진</strong></div>';
-  h+='<div class="rule-item"><strong>1줄 이상 소감</strong> 작성</div>';
-  h+='</div></div>';
-
-  // 습관 인증
+  h+='<div class="rule-item"><strong>1줄 이상 소감</strong> 작성</div></div></div>';
   h+='<div class="card"><div class="rule-section"><div class="rule-section-title"><span class="rule-emoji">\u2728</span> 습관 인증 (번외)</div>';
-  h+='<div class="rule-highlight" style="background:#F0FDF4;border-color:#BBF7D0">명상, 영양제, 건강식, 일기 등 단순 습관<br>\uD83D\uDC49 <strong>달성률 계산 제외</strong> \xB7 자기만족용<br>\uD83D\uDC49 인증사진 필수 (방법은 자유)<br>\uD83D\uDC49 운동\xB7공부 인증과 <strong>혼합 업로드 불가</strong></div>';
-  h+='</div></div>';
-
-  // 기타 안내
+  h+='<div class="rule-highlight" style="background:#F0FDF4;border-color:#BBF7D0">명상, 영양제, 건강식, 일기 등 단순 습관<br>\uD83D\uDC49 <strong>달성률 계산 제외</strong> \xB7 자기만족용<br>\uD83D\uDC49 인증사진 필수 (방법은 자유)<br>\uD83D\uDC49 운동\xB7공부 인증과 <strong>혼합 업로드 불가</strong></div></div></div>';
   h+='<div class="card"><div class="rule-section"><div class="rule-section-title"><span class="rule-emoji">\uD83D\uDCE2</span> 기타 안내</div>';
-  var etcRules=[
-    '루틴방은 <strong>본명</strong>으로 참여',
-    '정식 운영 중 <strong>사전 통보 없이 이탈</strong> 시 다음 기수 참여 제한',
-    '인증 방법 미숙지 또는 규칙 반복 위반 시 참여 제한 가능',
-    '번개\xB7소모임\xB7개별 톡방 개설은 자유'
-  ];
+  var etcRules=['루틴방은 <strong>본명</strong>으로 참여','정식 운영 중 <strong>사전 통보 없이 이탈</strong> 시 다음 기수 참여 제한','인증 방법 미숙지 또는 규칙 반복 위반 시 참여 제한 가능','번개\xB7소모임\xB7개별 톡방 개설은 자유'];
   etcRules.forEach(function(r){h+='<div class="rule-item">'+r+'</div>'});
-  h+='</div>';
-  h+='<div class="rule-warn" style="margin-top:10px">\u26A0\uFE0F 루틴방은 자발적으로 <strong>루틴있는 삶을 살고자</strong> 참여하는 공간 입니다.</div>';
-  h+='</div>';
-
+  h+='</div><div class="rule-warn" style="margin-top:10px">\u26A0\uFE0F 루틴방은 자발적으로 <strong>루틴있는 삶을 살고자</strong> 참여하는 공간 입니다.</div></div>';
   return h;
 }
 
-var S={data:null,loading:true,tab:"dash",isAdmin:false,isMember:false,modal:null,selId:null,toast:"",newName:"",goalForm:[],weekInputs:{},newPw:"",pwInput:"",deleteConfirm:null,nicknameEdit:{},mottoEdit:{},periodEdit:null,charts:{}};
+var S={data:null,loading:true,tab:"dash",isAdmin:false,modal:null,selId:null,toast:"",newName:"",goalForm:[],weekInputs:{},newPw:"",pwInput:"",deleteConfirm:null,nicknameEdit:{},mottoEdit:{},periodEdit:null,charts:{}};
 
 DOC_REF.onSnapshot(function(doc){
   if(doc.exists){var d=doc.data();if(!d.config.periods)d.config.periods=mkData().config.periods;S.data=d}
@@ -204,16 +174,10 @@ function render(){
 
   var html='<div class="header"><div class="header-row"><div><h1>바른생활루틴이들</h1><div class="sub">'+cfg.currentWeek+'주차 / 총 '+cfg.totalWeeks+'주</div><span class="badge" style="background:'+pc.bg+';color:'+pc.c+'">'+CP.label+'</span></div>';
   if(S.isAdmin)html+='<button class="btn-admin" onclick="S.isAdmin=false;render()">방장</button>';
-  else if(S.isMember)html+='<button class="btn-admin" style="background:#E8E7F0;color:'+NAVY+'" onclick="S.isMember=false;render()">멤버</button>';
-  else html+='<button class="btn-login" onclick="S.pwInput=\'\';S.modal=\'login\';render()">로그인</button>';
+  else html+='<button class="btn-login" onclick="S.pwInput=\'\';S.modal=\'login\';render()">방장 로그인</button>';
   html+='</div></div><div class="tabs">';
   tabs.forEach(function(t){html+='<button class="'+(S.tab===t.id?"active":"")+'" onclick="S.tab=\''+t.id+'\';render()">'+t.l+'</button>'});
   html+='</div><div class="content">';
-
-  // Tab access check
-  if((S.tab==="members"||S.tab==="weekly")&&!S.isMember&&!S.isAdmin){
-    html+='<div class="card" style="text-align:center;padding:40px 16px"><div style="font-weight:700;font-size:15px;color:'+NAVY+';margin-bottom:8px">멤버 전용</div><div style="font-size:13px;color:'+MID+';margin-bottom:16px">이 페이지는 멤버 로그인이 필요해</div><button class="btn" onclick="S.pwInput=\'\';S.modal=\'login\';render()">로그인하기</button></div>';
-  } else
 
   // ─── Dashboard ───
   if(S.tab==="dash"){
@@ -235,8 +199,27 @@ function render(){
         if(!g.members.length)return;
         html+='<div class="card-flush"><div class="group-header" style="border-color:'+g.border+';background:'+(g.gid===4?"#FEF2F2":"#F8F9FC")+'"><div><span style="font-weight:700;color:'+g.text+';font-size:14px">'+g.label+'</span><span style="font-size:11px;color:'+MID+';margin-left:8px">'+g.range+'</span></div><span style="font-size:11px;font-weight:700;color:'+g.text+';background:#fff;padding:2px 10px;border-radius:20px;border:1px solid '+g.border+'">'+g.members.length+'명</span></div>';
         g.members.forEach(function(m){var rk=mws.indexOf(m)+1;
-          html+='<div class="member-row" onclick="S.selId=\''+m.id+'\';S.modal=\'detail\';render()"><div style="display:flex;align-items:center"><span class="rank-circle" style="background:'+(rk<=3?NAVY:"#E8E7F0")+';color:'+(rk<=3?"#fff":"#64748B")+';margin-right:10px">'+rk+'</span><div style="flex:1"><span style="font-weight:600;font-size:14px;color:'+NAVY+'">'+dn(m.name)+'</span>'+(m.nickname?'<span style="font-size:11px;color:'+MID+';margin-left:6px">'+esc(m.nickname)+'</span>':'')+'</div><div style="text-align:right"><div style="font-weight:900;color:'+NAVY+';font-size:17px">'+pct(m.stats.overallRate)+'</div><div style="font-size:10px;color:'+MID+'">'+m.stats.totalAchieved+'/'+m.stats.totalTarget+'회</div></div></div></div>'});
-        html+='</div>'});
+          html+='<div class="member-row" onclick="S.selId=\''+m.id+'\';S.modal=\'detail\';render()">';
+          html+='<div style="display:flex;align-items:center">';
+          html+='<span class="rank-circle" style="background:'+(rk<=3?NAVY:"#E8E7F0")+';color:'+(rk<=3?"#fff":"#64748B")+';margin-right:10px">'+rk+'</span>';
+          html+='<div style="flex:1;min-width:0">';
+          html+='<div><span style="font-weight:600;font-size:14px;color:'+NAVY+'">'+dn(m.name)+'</span>'+(m.nickname?'<span style="font-size:11px;color:'+MID+';margin-left:6px">'+esc(m.nickname)+'</span>':'')+'</div>';
+          // 목표별 수행률 인라인
+          if(m.stats.goalStats.length){
+            html+='<div style="margin-top:3px;font-size:10px;line-height:1.5">';
+            m.stats.goalStats.forEach(function(gs,gi){
+              var col=gs.rate>=1?GREEN:(gs.rate>=0.5?"#64748B":RED);
+              if(gi>0)html+='<span style="color:#CBD5E1"> · </span>';
+              html+='<span style="color:#64748B">'+esc(gs.name)+' <b style="color:'+col+';font-weight:700">'+pct(gs.rate)+'</b></span>';
+            });
+            html+='</div>';
+          }
+          html+='</div>';
+          html+='<div style="text-align:right;margin-left:8px;flex-shrink:0"><div style="font-weight:900;color:'+NAVY+';font-size:17px">'+pct(m.stats.overallRate)+'</div><div style="font-size:10px;color:'+MID+'">'+m.stats.totalAchieved+'/'+m.stats.totalTarget+'회</div></div>';
+          html+='</div></div>';
+        });
+        html+='</div>'
+      });
     } else {
       html+='<div class="card-flush">';
       html+='<div style="padding:10px 14px;background:#F8F9FC;border-bottom:1px solid #E8E7F0"><span style="font-weight:700;font-size:14px;color:'+NAVY+'">13기 멤버</span><span style="font-size:11px;color:'+MID+';margin-left:8px">'+D.members.length+'명</span></div>';
@@ -302,47 +285,97 @@ function render(){
     });
   }
 
-  // ─── Weekly ───
+  // ─── Weekly (컴팩트 + 항목수 오름차순) ───
   else if(S.tab==="weekly"){
-    html+='<div style="background:'+NAVY+';color:#fff;border-radius:10px;padding:14px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700;font-size:17px">'+cfg.currentWeek+'주차 수행체크</div><div style="font-size:11px;color:'+MID+';margin-top:2px">방장만 입력 가능</div></div>';
+    html+='<div style="background:'+NAVY+';color:#fff;border-radius:10px;padding:14px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700;font-size:17px">'+cfg.currentWeek+'주차 수행체크</div><div style="font-size:11px;color:'+MID+';margin-top:2px">항목수 적은 순으로 표시</div></div>';
     if(S.isAdmin)html+='<span style="background:#fff;color:'+NAVY+';padding:4px 10px;border-radius:20px;font-size:11px;font-weight:800">편집 모드</span>';
     html+='</div>';
     if(!D.members.length)html+='<div style="text-align:center;padding:40px 0;color:'+MID+'">멤버를 먼저 추가해</div>';
-    D.members.forEach(function(m){
+    var weeklySorted=D.members.slice().sort(function(a,b){var d=a.goals.length-b.goals.length;return d!==0?d:a.name.localeCompare(b.name,"ko")});
+    var lastGoalCount=-1;
+    weeklySorted.forEach(function(m){
       var dispName=m.nickname?dn(m.name)+" ("+esc(m.nickname)+")":dn(m.name);
       var rec=(D.records["w"+cfg.currentWeek]&&D.records["w"+cfg.currentWeek][m.id])||{};
-      html+='<div class="card"><div style="font-weight:700;font-size:14px;margin-bottom:10px;color:'+NAVY+'">'+dispName+'</div>';
+      // 주 수행률
+      var wkT=0,wkA=0;
+      m.goals.forEach(function(g,gi){var v=rec[gi];if(v!=null&&v!==""){wkT+=g.target;wkA+=Math.max(0,+v)}});
+      var wkRate=wkT>0?Math.round(wkA/wkT*100):null;
+      // 그룹 구분선
+      if(m.goals.length!==lastGoalCount){
+        html+='<div style="font-size:11px;color:'+MID+';font-weight:600;padding:6px 4px 4px">'+m.goals.length+'목표</div>';
+        lastGoalCount=m.goals.length;
+      }
+      html+='<div class="card" style="padding:12px 14px;margin-bottom:8px">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
+      html+='<span style="font-weight:700;font-size:14px;color:'+NAVY+'">'+dispName+'</span>';
+      if(wkRate!==null){
+        var wkC=wkRate>=100?GREEN:(wkRate>=85?NAVY:(wkRate>=50?"#64748B":RED));
+        html+='<span style="font-weight:800;font-size:13px;color:'+wkC+'">'+wkRate+'%</span>';
+      } else html+='<span style="font-size:11px;color:#CBD5E1">미입력</span>';
+      html+='</div>';
+      html+='<div style="display:flex;flex-wrap:wrap;gap:5px">';
       m.goals.forEach(function(g,gi){
         var sv=rec[gi],iv=S.weekInputs[m.id]?S.weekInputs[m.id][gi]:undefined,dv=iv!==undefined?iv:sv;
-        var rate=sv!==undefined?Math.min(+sv/g.target,1):null;
-        html+='<div style="display:flex;align-items:center;margin-bottom:'+(gi<m.goals.length-1?"10":"0")+'px"><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;font-weight:500;color:'+NAVY+'">'+goalLabelShort(g)+'</span><span style="font-size:11px;color:'+MID+'">목표 '+g.target+'회</span></div>';
-        if(rate!==null)html+='<div class="progress-bar"><div class="progress-fill" style="width:'+Math.min(rate*100,100)+'%;background:'+(rate>=1?GREEN:NAVY)+'"></div></div>';
-        html+='</div>';
-        if(S.isAdmin)html+='<input type="number" min="0" data-sid="wk_'+m.id+'_'+gi+'" value="'+(dv!=null?dv:"")+'" placeholder="0" style="width:52px;margin-left:10px;text-align:center;padding:6px;border:1px solid #E8E7F0;border-radius:6px;font-size:14px;background:#fff;outline:none" oninput="setWeekInput(\''+m.id+'\','+gi+',this.value)">';
-        else{var c=sv!==undefined?(+sv>=g.target?GREEN:NAVY):"#CBD5E1";html+='<span style="font-weight:700;margin-left:12px;font-size:15px;color:'+c+'">'+(sv!==undefined?sv+"회":"-")+'</span>'}
-        html+='</div>'});
-      html+='</div>'});
-    if(S.isAdmin&&D.members.length)html+='<button class="btn" style="width:100%;padding:14px;font-size:15px;margin-top:4px;border-radius:10px" onclick="saveWeekly()">'+cfg.currentWeek+'주차 저장</button>';
+        var rate=sv!==undefined&&g.target>0?(+sv/g.target):null;
+        var color=rate===null?"#CBD5E1":(rate>=1?GREEN:(rate>=0.5?NAVY:RED));
+        html+='<span class="wk-pill">';
+        html+='<span style="color:'+NAVY+';font-weight:500">'+goalLabelShort(g)+'</span>';
+        if(S.isAdmin){
+          html+='<input type="number" min="0" data-sid="wk_'+m.id+'_'+gi+'" value="'+(dv!=null?dv:"")+'" placeholder="0" style="color:'+color+'" oninput="setWeekInput(\''+m.id+'\','+gi+',this.value)">';
+          html+='<span style="color:'+MID+';font-size:11px">/'+g.target+'</span>';
+        } else {
+          html+='<span style="font-weight:800;color:'+color+'">'+(sv!==undefined?sv:"-")+'</span>';
+          html+='<span style="color:'+MID+';font-size:11px">/'+g.target+'</span>';
+        }
+        html+='</span>';
+      });
+      html+='</div></div>';
+    });
+    if(S.isAdmin&&D.members.length)html+='<button class="btn" style="width:100%;padding:14px;font-size:15px;margin-top:8px;border-radius:10px" onclick="saveWeekly()">'+cfg.currentWeek+'주차 저장</button>';
   }
 
-  // ─── Graph ───
+  // ─── Graph (다중 라인 + 항목수 오름차순) ───
   else if(S.tab==="graph"){
-    html+='<div style="background:'+NAVY+';color:#fff;border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-weight:700;font-size:17px">주간 수행률 추이</div><div style="font-size:11px;color:'+MID+';margin-top:2px">'+cfg.currentWeek+'주차까지</div></div>';
+    html+='<div style="background:'+NAVY+';color:#fff;border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-weight:700;font-size:17px">주간 수행률 추이</div><div style="font-size:11px;color:'+MID+';margin-top:2px">'+cfg.currentWeek+'주차까지 \xB7 색깔별 목표</div></div>';
     if(!D.members.length)html+='<div style="text-align:center;padding:56px 0;color:'+MID+'">데이터 없음</div>';
-    else mws.forEach(function(m){
-      var wd=getWeeklyRates(m,D.records,cfg.currentWeek),has=wd.some(function(d){return d!==null});
-      html+='<div class="card-flush" style="margin-bottom:14px"><div style="padding:14px 16px 8px;display:flex;justify-content:space-between;align-items:center"><div><span style="font-weight:700;font-size:15px;color:'+NAVY+'">'+dn(m.name)+'</span>'+(m.nickname?'<span style="font-size:11px;color:'+MID+';margin-left:6px">'+esc(m.nickname)+'</span>':'')+'</div><div style="text-align:right"><span style="font-weight:900;font-size:20px;color:'+NAVY+'">'+pct(m.stats.overallRate)+'</span><div style="font-size:10px;color:'+MID+'">누적 달성률</div></div></div>';
-      if(has)html+='<div class="chart-container"><canvas id="chart_'+m.id+'"></canvas></div>';
-      else html+='<div style="padding:24px 16px;text-align:center;color:'+MID+';font-size:13px">아직 기록 없음</div>';
-      html+='</div>'});
+    else {
+      var graphSorted=mws.slice().sort(function(a,b){var d=a.goals.length-b.goals.length;return d!==0?d:b.stats.overallRate-a.stats.overallRate});
+      var lastGC=-1;
+      graphSorted.forEach(function(m){
+        if(m.goals.length!==lastGC){
+          html+='<div style="font-size:11px;color:'+MID+';font-weight:600;padding:6px 4px 4px;margin-top:4px">'+m.goals.length+'목표</div>';
+          lastGC=m.goals.length;
+        }
+        var wd=getWeeklyRates(m,D.records,cfg.currentWeek),has=wd.some(function(d){return d!==null});
+        html+='<div class="card-flush" style="margin-bottom:12px">';
+        html+='<div style="padding:14px 16px 6px;display:flex;justify-content:space-between;align-items:center">';
+        html+='<div><span style="font-weight:700;font-size:15px;color:'+NAVY+'">'+dn(m.name)+'</span>'+(m.nickname?'<span style="font-size:11px;color:'+MID+';margin-left:6px">'+esc(m.nickname)+'</span>':'')+'</div>';
+        html+='<div style="text-align:right"><span style="font-weight:900;font-size:20px;color:'+NAVY+'">'+pct(m.stats.overallRate)+'</span><div style="font-size:10px;color:'+MID+'">누적 달성률</div></div>';
+        html+='</div>';
+        if(has){
+          // 레전드 (목표별 색)
+          html+='<div class="chart-legend">';
+          m.goals.forEach(function(g,gi){
+            var gs=m.stats.goalStats[gi];
+            var col=GOAL_COLORS[gi%GOAL_COLORS.length];
+            html+='<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+col+'"></span><span style="color:'+NAVY+'">'+esc(g.name)+'</span><span style="color:'+MID+'">('+pct(gs.rate)+')</span></span>';
+          });
+          html+='</div>';
+          html+='<div class="chart-container"><canvas id="chart_'+m.id+'"></canvas></div>';
+        } else {
+          html+='<div style="padding:24px 16px;text-align:center;color:'+MID+';font-size:13px">아직 기록 없음</div>';
+        }
+        html+='</div>';
+      });
+    }
   }
 
-  // ─── Rules (규칙) ───
+  // ─── Rules ───
   else if(S.tab==="rules"){
     html+=buildRulesTab();
   }
 
-  // ─── History (조상님들) - names masked ───
+  // ─── History ───
   else if(S.tab==="history"){
     html+='<div style="background:'+NAVY+';color:#fff;border-radius:10px;padding:14px 16px;margin-bottom:14px"><div style="font-weight:700;font-size:17px">12기 수행 결과(평가자: Claude)</div><div style="font-size:11px;color:'+MID+';margin-top:2px">11주 운영 기록</div></div>';
     var sections=[
@@ -380,8 +413,8 @@ function render(){
 
   html+='</div>';
 
-  // ─── Login Modal ───
-  if(S.modal==="login")html+='<div class="overlay" onclick="S.modal=null;render()"><div class="modal" onclick="event.stopPropagation()"><div style="font-weight:800;font-size:18px;margin-bottom:4px;color:'+NAVY+'">로그인</div><div style="font-size:12px;color:'+MID+';margin-bottom:16px">비밀번호를 입력해</div><input type="password" class="inp" style="margin-bottom:14px" placeholder="비밀번호" data-sid="pwInput" value="'+esc(S.pwInput)+'" oninput="S.pwInput=this.value" onkeydown="if(event.key===\'Enter\')doLogin()"><div style="display:flex;gap:8px"><button class="btn-outline" style="flex:1;padding:12px;font-size:14px" onclick="S.modal=null;render()">취소</button><button style="flex:1;padding:12px;font-size:14px;background:#E8E7F0;color:'+NAVY+';border:none;border-radius:8px;font-weight:700;cursor:pointer" onclick="doMemberLogin()">멤버</button><button class="btn" style="flex:1;padding:12px;font-size:14px" onclick="doLogin()">방장</button></div></div></div>';
+  // ─── Login Modal (방장만) ───
+  if(S.modal==="login")html+='<div class="overlay" onclick="S.modal=null;render()"><div class="modal" onclick="event.stopPropagation()"><div style="font-weight:800;font-size:18px;margin-bottom:4px;color:'+NAVY+'">방장 로그인</div><div style="font-size:12px;color:'+MID+';margin-bottom:16px">비밀번호를 입력해</div><input type="password" class="inp" style="margin-bottom:14px" placeholder="비밀번호" data-sid="pwInput" value="'+esc(S.pwInput)+'" oninput="S.pwInput=this.value" onkeydown="if(event.key===\'Enter\')doLogin()"><div style="display:flex;gap:8px"><button class="btn-outline" style="flex:1;padding:12px;font-size:14px" onclick="S.modal=null;render()">취소</button><button class="btn" style="flex:1;padding:12px;font-size:14px" onclick="doLogin()">로그인</button></div></div></div>';
 
   // ─── Goals Modal ───
   if(S.modal==="goals"&&S.selId){
@@ -432,12 +465,26 @@ function render(){
 
   if(activeId){var el=document.querySelector('[data-sid="'+activeId+'"]');if(el){el.focus();try{el.setSelectionRange(selStart,selEnd)}catch(e){}}}
 
-  if(S.tab==="graph")mws.forEach(function(m){var cv=document.getElementById("chart_"+m.id);if(!cv)return;var wd=getWeeklyRates(m,D.records,cfg.currentWeek);if(S.charts[m.id])S.charts[m.id].destroy();S.charts[m.id]=new Chart(cv,{type:"line",data:{labels:wd.map(function(_,i){return(i+1)+"주"}),datasets:[{data:wd,borderColor:NAVY,backgroundColor:"rgba(30,27,75,0.08)",borderWidth:2.5,pointBackgroundColor:NAVY,pointBorderColor:"#fff",pointBorderWidth:2,pointRadius:4,fill:true,tension:0.3,spanGaps:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:NAVY,cornerRadius:8,callbacks:{label:function(c){return c.parsed.y!=null?c.parsed.y+"%":"-"}}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},color:MID}},y:{min:0,max:120,grid:{color:"#F1F5F9"},ticks:{font:{size:10},color:MID,callback:function(v){return v+"%"}}}}}})});
-  if(S.modal==="detail"&&selMem){var cv=document.getElementById("chart_detail_"+selMem.id);if(cv){var wd2=getWeeklyRates(selMem,D.records,cfg.currentWeek),k="d_"+selMem.id;if(S.charts[k])S.charts[k].destroy();S.charts[k]=new Chart(cv,{type:"line",data:{labels:wd2.map(function(_,i){return(i+1)+"주"}),datasets:[{data:wd2,borderColor:"#fff",backgroundColor:"rgba(255,255,255,0.1)",borderWidth:2,pointBackgroundColor:"#fff",pointRadius:3,fill:true,tension:0.3,spanGaps:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:"#fff",titleColor:NAVY,bodyColor:NAVY,cornerRadius:8,callbacks:{label:function(c){return c.parsed.y!=null?c.parsed.y+"%":"-"}}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},color:MID}},y:{min:0,max:120,grid:{color:"rgba(255,255,255,0.08)"},ticks:{font:{size:9},color:"#64748B",callback:function(v){return v+"%"}}}}}})}}
+  // 그래프 탭: 목표별 다중 라인 차트
+  if(S.tab==="graph"){
+    var graphSorted2=mws.slice().sort(function(a,b){var d=a.goals.length-b.goals.length;return d!==0?d:b.stats.overallRate-a.stats.overallRate});
+    graphSorted2.forEach(function(m){
+      var cv=document.getElementById("chart_"+m.id);if(!cv)return;
+      var perGoal=getPerGoalWeeklyRates(m,D.records,cfg.currentWeek);
+      var labels=[];for(var i=1;i<=cfg.currentWeek;i++)labels.push(i+"주");
+      var datasets=m.goals.map(function(g,gi){
+        return {label:g.name,data:perGoal[gi],borderColor:GOAL_COLORS[gi%GOAL_COLORS.length],backgroundColor:"transparent",borderWidth:2,pointBackgroundColor:GOAL_COLORS[gi%GOAL_COLORS.length],pointBorderColor:"#fff",pointBorderWidth:1.5,pointRadius:3,fill:false,tension:0.25,spanGaps:false}
+      });
+      if(S.charts[m.id])S.charts[m.id].destroy();
+      S.charts[m.id]=new Chart(cv,{type:"line",data:{labels:labels,datasets:datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:NAVY,cornerRadius:8,callbacks:{label:function(c){return c.dataset.label+": "+(c.parsed.y!=null?c.parsed.y+"%":"-")}}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},color:MID}},y:{min:0,suggestedMax:150,grid:{color:"#F1F5F9"},ticks:{font:{size:10},color:MID,callback:function(v){return v+"%"}}}}}});
+    });
+  }
+
+  // 디테일 모달 차트
+  if(S.modal==="detail"&&selMem){var cv=document.getElementById("chart_detail_"+selMem.id);if(cv){var wd2=getWeeklyRates(selMem,D.records,cfg.currentWeek),k="d_"+selMem.id;if(S.charts[k])S.charts[k].destroy();S.charts[k]=new Chart(cv,{type:"line",data:{labels:wd2.map(function(_,i){return(i+1)+"주"}),datasets:[{data:wd2,borderColor:"#fff",backgroundColor:"rgba(255,255,255,0.1)",borderWidth:2,pointBackgroundColor:"#fff",pointRadius:3,fill:true,tension:0.3,spanGaps:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:"#fff",titleColor:NAVY,bodyColor:NAVY,cornerRadius:8,callbacks:{label:function(c){return c.parsed.y!=null?c.parsed.y+"%":"-"}}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},color:MID}},y:{min:0,max:150,grid:{color:"rgba(255,255,255,0.08)"},ticks:{font:{size:9},color:"#64748B",callback:function(v){return v+"%"}}}}}})}}
 }
 
-function doLogin(){if(S.pwInput===S.data.config.adminPw){S.isAdmin=true;S.isMember=true;S.modal=null;S.pwInput="";showToast("방장 모드 활성화")}else showToast("비밀번호 틀림")}
-function doMemberLogin(){if(S.pwInput==="1313"){S.isMember=true;S.modal=null;S.pwInput="";showToast("멤버 로그인 완료")}else showToast("비밀번호 틀림")}
+function doLogin(){if(S.pwInput===S.data.config.adminPw){S.isAdmin=true;S.modal=null;S.pwInput="";showToast("방장 모드 활성화")}else showToast("비밀번호 틀림")}
 function addMember(){if(!S.newName.trim())return;var n=S.newName.trim();var nd=Object.assign({},S.data);nd.members=nd.members.concat([{id:Date.now().toString(),name:n,nickname:"",motto:"",goals:[{name:"운동",detail:"",target:2}]}]);save(nd);S.newName="";showToast(n+" 추가됨")}
 function saveNick(id){var nd=Object.assign({},S.data);nd.members=nd.members.map(function(m){return m.id===id?Object.assign({},m,{nickname:S.nicknameEdit[id]||""}):m});save(nd);delete S.nicknameEdit[id];showToast("별명 저장")}
 function saveMotto(id){var nd=Object.assign({},S.data);nd.members=nd.members.map(function(m){return m.id===id?Object.assign({},m,{motto:S.mottoEdit[id]||""}):m});save(nd);delete S.mottoEdit[id];showToast("다짐 저장")}
@@ -449,7 +496,7 @@ function saveWeekly(){var nd=Object.assign({},S.data);if(!nd.records)nd.records=
 function savePeriods(){var nd=Object.assign({},S.data);nd.config=Object.assign({},nd.config,{periods:Object.assign({},S.periodEdit)});save(nd);S.periodEdit=null;showToast("기간 저장됨")}
 function adjWeek(d){var c=S.data.config.currentWeek+d;if(c>=1&&c<=S.data.config.totalWeeks){var nd=Object.assign({},S.data);nd.config=Object.assign({},nd.config,{currentWeek:c});save(nd);if(d>0)showToast(c+"주차 시작")}}
 function changePw(){if(!S.newPw)return;var nd=Object.assign({},S.data);nd.config=Object.assign({},nd.config,{adminPw:S.newPw});save(nd);S.newPw="";showToast("변경됨")}
-function resetAll(){save(mkData());S.isAdmin=false;S.isMember=false;S.tab="dash";S.deleteConfirm=null;showToast("초기화 완료")}
+function resetAll(){save(mkData());S.isAdmin=false;S.tab="dash";S.deleteConfirm=null;showToast("초기화 완료")}
 </script>
 </body>
 </html>
