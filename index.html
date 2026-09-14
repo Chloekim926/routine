@@ -26,18 +26,27 @@
     font-size:17px;
     line-height:1.55;
   }
-  /* 배경이 어떤 환경에서도 확실히 보라색으로 깔리도록 페이지 전체를 감싸는 컨테이너 */
   #page{background:var(--purple);min-height:100vh;min-height:100dvh;padding-bottom:60px}
   .wrap{max-width:480px;margin:0 auto;padding:0 18px}
 
   /* ---------- header ---------- */
-  header{position:relative;color:var(--white);padding:44px 0 30px;overflow:hidden}
+  header{position:relative;color:var(--white);padding:44px 0 22px;overflow:hidden}
   .brand{font-size:15px;font-weight:700;color:var(--yellow);letter-spacing:.02em}
   h1{font-size:34px;font-weight:900;line-height:1.25;margin-top:6px;color:var(--white)}
   .underline{position:relative;display:inline-block}
   .underline svg{position:absolute;left:-2%;bottom:-6px;width:104%;height:12px}
   .lead{margin-top:14px;font-size:16px;color:#E4DFF7}
   .scribble{position:absolute;pointer-events:none;opacity:.9}
+
+  /* ---------- tabs ---------- */
+  .tabs{display:flex;gap:8px;margin-bottom:20px}
+  .tabs button{
+    flex:1;padding:14px 0;
+    border:2px solid rgba(255,255,255,.35);border-radius:14px;
+    background:none;color:var(--white);
+    font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;
+  }
+  .tabs button.on{background:var(--yellow);border-color:var(--yellow);color:var(--ink)}
 
   /* ---------- cards ---------- */
   section.card{
@@ -51,96 +60,73 @@
 
   label{display:block;font-size:15px;font-weight:700;margin-bottom:6px}
   input[type=text],textarea{
-    width:100%;
-    font-family:inherit;
-    font-size:17px;
-    color:var(--ink);
-    background:#F7F6FB;
-    border:2px solid var(--line);
-    border-radius:12px;
-    padding:13px 14px;
-    appearance:none;
-    -webkit-appearance:none;
+    width:100%;font-family:inherit;font-size:17px;color:var(--ink);
+    background:#F7F6FB;border:2px solid var(--line);border-radius:12px;
+    padding:13px 14px;appearance:none;-webkit-appearance:none;
   }
   input:focus,textarea:focus,select:focus{outline:none;border-color:var(--purple)}
   textarea{min-height:96px;resize:vertical}
   .field{margin-bottom:16px}
   .field:last-child{margin-bottom:0}
   select{
-    width:100%;
-    font-family:inherit;
-    font-size:17px;
-    color:var(--ink);
-    background:#F7F6FB;
-    border:2px solid var(--line);
-    border-radius:12px;
-    padding:13px 14px;
-    appearance:none;
-    -webkit-appearance:none;
+    width:100%;font-family:inherit;font-size:17px;color:var(--ink);
+    background:#F7F6FB;border:2px solid var(--line);border-radius:12px;
+    padding:13px 14px;appearance:none;-webkit-appearance:none;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%2335246B' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;
-    background-position:right 14px center;
+    background-repeat:no-repeat;background-position:right 14px center;
   }
 
-  /* ---------- goal cards ---------- */
-  .goal{
-    border:2px solid var(--line);
-    border-radius:16px;
-    padding:18px 16px;
-    margin-bottom:14px;
-    position:relative;
-  }
+  /* ---------- goal cards (등록 폼) ---------- */
+  .goal{border:2px solid var(--line);border-radius:16px;padding:18px 16px;margin-bottom:14px;position:relative}
   .goal.required{border-color:var(--yellow);background:#FFFDF4}
   .goal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
   .goal-num{font-size:16px;font-weight:900;color:var(--purple)}
-  .badge{
-    display:inline-block;margin-left:8px;
-    background:var(--yellow);color:var(--ink);
-    font-size:12px;font-weight:900;
-    border-radius:99px;padding:3px 10px;vertical-align:2px;
-  }
-  .goal-remove{
-    border:none;background:none;color:var(--muted);
-    font-size:14px;font-weight:500;padding:6px;cursor:pointer;font-family:inherit;
-  }
-  .fixed-field{
-    background:#F7F6FB;border:2px solid var(--line);border-radius:12px;
-    padding:13px 14px;font-size:17px;font-weight:700;color:var(--ink);
-  }
+  .badge{display:inline-block;margin-left:8px;background:var(--yellow);color:var(--ink);
+    font-size:12px;font-weight:900;border-radius:99px;padding:3px 10px;vertical-align:2px}
+  .goal-remove{border:none;background:none;color:var(--muted);font-size:14px;font-weight:500;padding:6px;cursor:pointer;font-family:inherit}
 
   .stepper{display:flex;align-items:center;gap:10px}
-  .stepper button{
-    width:52px;height:52px;flex:none;
-    border:none;border-radius:12px;background:var(--purple);color:var(--white);
-    font-size:24px;font-weight:700;cursor:pointer;font-family:inherit;
-  }
+  .stepper button{width:52px;height:52px;flex:none;border:none;border-radius:12px;
+    background:var(--purple);color:var(--white);font-size:24px;font-weight:700;cursor:pointer;font-family:inherit}
   .stepper button:active{background:var(--purple-deep)}
-  .stepper .count{
-    flex:1;text-align:center;font-size:22px;font-weight:900;
-    background:#F7F6FB;border:2px solid var(--line);border-radius:12px;padding:10px 0;
-  }
+  .stepper .count{flex:1;text-align:center;font-size:22px;font-weight:900;
+    background:#F7F6FB;border:2px solid var(--line);border-radius:12px;padding:10px 0}
   .stepper .unit{font-size:15px;color:var(--muted);flex:none}
   .mini-hint{font-size:13px;color:var(--muted);margin-top:8px}
 
-  .add-goal{
-    width:100%;padding:16px 0;
-    border:2px dashed #B9B1DB;border-radius:16px;
-    background:none;color:var(--purple);
-    font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;
-  }
+  .add-goal{width:100%;padding:16px 0;border:2px dashed #B9B1DB;border-radius:16px;
+    background:none;color:var(--purple);font-family:inherit;font-size:16px;font-weight:700;cursor:pointer}
   .add-goal:disabled{opacity:.4;cursor:default}
 
+  .edit-banner{display:none;background:#FFF7DC;border-radius:12px;padding:12px 14px;
+    font-size:15px;font-weight:700;margin-bottom:16px}
+  .edit-banner.show{display:block}
+
   /* ---------- submit ---------- */
-  .submit{
-    width:100%;padding:18px 0;margin-top:6px;
-    border:none;border-radius:16px;
-    background:var(--yellow);color:var(--ink);
-    font-family:inherit;font-size:19px;font-weight:900;cursor:pointer;
-  }
+  .submit{width:100%;padding:18px 0;margin-top:6px;border:none;border-radius:16px;
+    background:var(--yellow);color:var(--ink);font-family:inherit;font-size:19px;font-weight:900;cursor:pointer}
   .submit:disabled{opacity:.55;cursor:default}
   .error-box{display:none;margin-top:14px;background:#FDECEC;color:var(--danger);
     border-radius:12px;padding:12px 14px;font-size:15px;font-weight:700}
   .error-box.show{display:block}
+
+  /* ---------- 모두의 목표 ---------- */
+  .member{background:var(--white);border-radius:20px;padding:22px 20px;margin-bottom:14px}
+  .member-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .member-name{font-size:19px;font-weight:900}
+  .edit-btn{border:2px solid var(--purple);border-radius:99px;background:none;color:var(--purple);
+    font-family:inherit;font-size:14px;font-weight:700;padding:7px 16px;cursor:pointer}
+  .member-goal{display:flex;align-items:baseline;gap:8px;padding:7px 0;border-top:1px solid var(--line);font-size:15px}
+  .member-goal:first-of-type{border-top:none}
+  .mg-field{flex:none;font-weight:900;color:var(--purple);min-width:44px}
+  .mg-detail{flex:1}
+  .mg-count{flex:none;color:var(--muted);font-weight:700}
+  .member-year{margin-top:12px;background:#F7F6FB;border-radius:10px;padding:10px 12px;
+    font-size:14px;color:var(--muted)}
+  .member-year b{color:var(--ink)}
+  .list-state{text-align:center;color:#E4DFF7;padding:40px 0;font-size:16px}
+  .refresh{width:100%;padding:14px 0;margin-bottom:14px;border:2px solid rgba(255,255,255,.35);
+    border-radius:14px;background:none;color:var(--white);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}
 
   /* ---------- done ---------- */
   #done{display:none;text-align:center;color:var(--white);padding:90px 0}
@@ -148,12 +134,13 @@
   #done .big{font-size:56px}
   #done h2{font-size:26px;font-weight:900;margin:14px 0 8px;color:var(--white)}
   #done p{color:#E4DFF7;font-size:16px}
+  #done .submit{max-width:300px;margin:26px auto 0;display:block}
 </style>
 </head>
 <body>
 <div id="page">
+<div class="wrap">
 
-<div class="wrap" id="formWrap">
   <header>
     <svg class="scribble" style="top:26px;right:-8px;width:74px" viewBox="0 0 80 46" fill="none">
       <path d="M4 38C14 12 30 4 46 10C60 15 64 30 52 36C42 41 34 32 41 24C49 15 66 14 76 22"
@@ -165,93 +152,112 @@
         <path d="M3 8C40 3 80 9 118 5C150 2 178 7 197 5" stroke="#FFD23F" stroke-width="5" stroke-linecap="round"/>
       </svg></span>
     </h1>
-    <p class="lead">9월 28일부터 12주, 같이 갑니다.<br>아래 항목을 채우고 맨 아래 등록 버튼을 눌러주세요.</p>
+    <p class="lead">9월 28일부터 12주, 같이 갑니다.</p>
   </header>
 
-  <section class="card">
-    <h2>이름</h2>
-    <p class="hint">단톡방에서 쓰는 이름으로 적어주세요.</p>
-    <div class="field">
-      <input type="text" id="name" placeholder="예) 김정혜" autocomplete="name">
-    </div>
-  </section>
+  <div class="tabs">
+    <button id="tabForm" class="on">목표 등록</button>
+    <button id="tabList">모두의 목표</button>
+  </div>
 
-  <section class="card">
-    <h2>이번 기수 목표</h2>
-    <p class="hint">운동은 필수 목표라 기본으로 들어있어요. 나머지 목표는 최대 6개까지 추가할 수 있어요.</p>
+  <!-- ================= 등록 폼 ================= -->
+  <div id="formView">
+    <div class="edit-banner" id="editBanner"></div>
 
-    <!-- 필수 운동 목표 (삭제 불가) -->
-    <div class="goal required" id="exerciseGoal">
-      <div class="goal-head">
-        <span class="goal-num">운동<span class="badge">필수</span></span>
-      </div>
+    <section class="card">
+      <h2>이름</h2>
+      <p class="hint">단톡방에서 쓰는 이름으로 적어주세요. 같은 이름으로 다시 제출하면 기존 목표가 수정돼요.</p>
       <div class="field">
-        <label>목표 내용</label>
-        <input type="text" class="g-detail" id="exDetail" placeholder="예) 러닝 30분, 헬스, 홈트">
+        <input type="text" id="name" placeholder="예) 김정혜" autocomplete="name">
       </div>
-      <div class="field">
-        <label>주간 목표 횟수</label>
-        <div class="stepper">
-          <button type="button" id="exMinus">−</button>
-          <div class="count" id="exCount">2</div>
-          <button type="button" id="exPlus">＋</button>
-          <span class="unit">회 / 주</span>
+    </section>
+
+    <section class="card">
+      <h2>이번 기수 목표</h2>
+      <p class="hint">운동은 필수 목표라 기본으로 들어있어요. 나머지 목표는 최대 6개까지 추가할 수 있어요.</p>
+
+      <div class="goal required" id="exerciseGoal">
+        <div class="goal-head">
+          <span class="goal-num">운동<span class="badge">필수</span></span>
         </div>
-        <p class="mini-hint">운동은 주 2회 이상, 회당 30분 이상이 기본이에요.</p>
+        <div class="field">
+          <label>목표 내용</label>
+          <input type="text" class="g-detail" id="exDetail" placeholder="예) 러닝 30분, 헬스, 홈트">
+        </div>
+        <div class="field">
+          <label>주간 목표 횟수</label>
+          <div class="stepper">
+            <button type="button" id="exMinus">−</button>
+            <div class="count" id="exCount">2</div>
+            <button type="button" id="exPlus">＋</button>
+            <span class="unit">회 / 주</span>
+          </div>
+          <p class="mini-hint">운동은 주 2회 이상, 회당 30분 이상이 기본이에요.</p>
+        </div>
       </div>
-    </div>
 
-    <div id="goals"></div>
-    <button type="button" class="add-goal" id="addGoal">+ 목표 추가하기</button>
-  </section>
+      <div id="goals"></div>
+      <button type="button" class="add-goal" id="addGoal">+ 목표 추가하기</button>
+    </section>
 
-  <section class="card">
-    <h2>2026년이 끝날 때까지</h2>
-    <p class="hint">올해 안에 꼭 이루고 싶은 것을 자유롭게 적어주세요.</p>
-    <div class="field">
-      <textarea id="yearGoal" placeholder="예) 논문 초고 완성하기, 10km 마라톤 완주"></textarea>
-    </div>
-  </section>
+    <section class="card">
+      <h2>2026년이 끝날 때까지</h2>
+      <p class="hint">올해 안에 꼭 이루고 싶은 것을 자유롭게 적어주세요.</p>
+      <div class="field">
+        <textarea id="yearGoal" placeholder="예) 논문 초고 완성하기, 10km 마라톤 완주"></textarea>
+      </div>
+    </section>
 
-  <section class="card">
-    <h2>하고 싶은 말</h2>
-    <p class="hint">각오, 인사, 방장에게 전할 말 무엇이든 좋아요.</p>
-    <div class="field">
-      <textarea id="message" placeholder="이번 기수 화이팅!"></textarea>
-    </div>
-  </section>
+    <section class="card">
+      <h2>하고 싶은 말</h2>
+      <p class="hint">각오, 인사, 방장에게 전할 말 무엇이든 좋아요.</p>
+      <div class="field">
+        <textarea id="message" placeholder="이번 기수 화이팅!"></textarea>
+      </div>
+    </section>
 
-  <button type="button" class="submit" id="submitBtn">목표 등록하기</button>
-  <div class="error-box" id="errorBox"></div>
+    <button type="button" class="submit" id="submitBtn">목표 등록하기</button>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <!-- ================= 모두의 목표 ================= -->
+  <div id="listView" style="display:none">
+    <button type="button" class="refresh" id="refreshBtn">새로고침</button>
+    <div id="memberList"></div>
+    <div class="list-state" id="listState">불러오는 중...</div>
+  </div>
+
+  <!-- ================= 완료 ================= -->
+  <div id="done">
+    <div class="big">🎉</div>
+    <h2 id="doneTitle">등록 완료!</h2>
+    <p>목표가 잘 접수됐어요.<br>수정하고 싶으면 같은 이름으로 다시 제출하면 돼요.<br>9월 28일에 만나요!</p>
+    <button type="button" class="submit" id="doneListBtn">모두의 목표 보러가기</button>
+  </div>
+
 </div>
-
-<div class="wrap" id="done">
-  <div class="big">🎉</div>
-  <h2>등록 완료!</h2>
-  <p>목표가 잘 접수됐어요.<br>9월 28일에 만나요!</p>
-</div>
-
 </div>
 <script>
 /* ================================================================
    ★ 여기만 수정하면 됩니다 ★
    Apps Script 배포 후 받은 웹 앱 URL을 아래 따옴표 안에 붙여넣기
 ================================================================ */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuoRCBwLXF1dohu4KiOVbFkuAzF8Vmiwss-oDSrSdE6ZN4TvIvAxzj98oWN1o874k/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtM8m8KdK3PfDDf4lh-YiR4GDSnVorqErVfA0C5dl4b8IDcX6qVL21zmAbTKYnra8/exec";
 
 const FIELDS = ["공부","논문","어학","기타"];
-const MAX_EXTRA = 6; /* 운동 제외 추가 목표 최대 개수 */
+const MAX_EXTRA = 6;
 const goalsEl = document.getElementById("goals");
 const addBtn = document.getElementById("addGoal");
-
-/* ---------- 필수 운동 목표 ---------- */
 const exCount = document.getElementById("exCount");
+const submitBtn = document.getElementById("submitBtn");
+const editBanner = document.getElementById("editBanner");
+
 document.getElementById("exMinus").onclick = ()=>{ exCount.textContent = Math.max(2, +exCount.textContent-1); };
 document.getElementById("exPlus").onclick  = ()=>{ exCount.textContent = Math.min(21, +exCount.textContent+1); };
 
 /* ---------- 추가 목표 ---------- */
 function addGoal(){
-  if(goalsEl.children.length >= MAX_EXTRA) return;
+  if(goalsEl.children.length >= MAX_EXTRA) return null;
   const g = document.createElement("div");
   g.className = "goal";
   g.innerHTML = `
@@ -281,11 +287,11 @@ function addGoal(){
     </div>`;
   goalsEl.appendChild(g);
   renumber();
-
   const countEl = g.querySelector(".count");
   g.querySelector(".minus").onclick = ()=>{ countEl.textContent = Math.max(1, +countEl.textContent-1); };
   g.querySelector(".plus").onclick  = ()=>{ countEl.textContent = Math.min(21, +countEl.textContent+1); };
   g.querySelector(".goal-remove").onclick = ()=>{ g.remove(); renumber(); };
+  return g;
 }
 
 function renumber(){
@@ -293,24 +299,115 @@ function renumber(){
   addBtn.disabled = goalsEl.children.length >= MAX_EXTRA;
   addBtn.textContent = addBtn.disabled ? "목표는 운동 포함 최대 7개까지예요" : "+ 목표 추가하기";
 }
-
 addBtn.onclick = addGoal;
+
+/* ---------- 탭 전환 ---------- */
+const tabForm = document.getElementById("tabForm");
+const tabList = document.getElementById("tabList");
+const formView = document.getElementById("formView");
+const listView = document.getElementById("listView");
+const doneView = document.getElementById("done");
+
+function showForm(){
+  tabForm.classList.add("on"); tabList.classList.remove("on");
+  formView.style.display = ""; listView.style.display = "none"; doneView.classList.remove("show");
+}
+function showList(){
+  tabList.classList.add("on"); tabForm.classList.remove("on");
+  formView.style.display = "none"; listView.style.display = ""; doneView.classList.remove("show");
+  loadMembers();
+}
+tabForm.onclick = showForm;
+tabList.onclick = showList;
+document.getElementById("doneListBtn").onclick = showList;
+document.getElementById("refreshBtn").onclick = loadMembers;
+
+/* ---------- 모두의 목표 불러오기 ---------- */
+const memberList = document.getElementById("memberList");
+const listState = document.getElementById("listState");
+
+function esc(s){ const d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; }
+
+async function loadMembers(){
+  memberList.innerHTML = "";
+  listState.style.display = "";
+  listState.textContent = "불러오는 중...";
+  try{
+    const res = await fetch(SCRIPT_URL);
+    const out = await res.json();
+    if(out.result !== "ok") throw new Error();
+    const members = out.members || [];
+    if(members.length === 0){
+      listState.textContent = "아직 등록한 사람이 없어요. 1등으로 등록해보세요!";
+      return;
+    }
+    listState.style.display = "none";
+    members.forEach(m=>{
+      const card = document.createElement("div");
+      card.className = "member";
+      const goalsHtml = (m.goals||[]).map(g=>`
+        <div class="member-goal">
+          <span class="mg-field">${esc(g.field)}</span>
+          <span class="mg-detail">${esc(g.detail)}</span>
+          <span class="mg-count">주 ${esc(g.count)}회</span>
+        </div>`).join("");
+      const yearHtml = m.yearGoal ? `<div class="member-year"><b>2026 목표</b> · ${esc(m.yearGoal)}</div>` : "";
+      card.innerHTML = `
+        <div class="member-head">
+          <span class="member-name">${esc(m.name)}</span>
+          <button type="button" class="edit-btn">내 목표 수정</button>
+        </div>
+        ${goalsHtml}${yearHtml}`;
+      card.querySelector(".edit-btn").onclick = ()=> startEdit(m);
+      memberList.appendChild(card);
+    });
+  }catch(err){
+    listState.textContent = "목록을 불러오지 못했어요. 새로고침을 눌러주세요.";
+  }
+}
+
+/* ---------- 수정 모드: 기존 값 폼에 채우기 ---------- */
+function startEdit(m){
+  document.getElementById("name").value = m.name || "";
+  const goals = m.goals || [];
+  const ex = goals.find(g=> g.field === "운동") || goals[0] || {};
+  document.getElementById("exDetail").value = ex.detail || "";
+  exCount.textContent = Math.max(2, +ex.count || 2);
+
+  goalsEl.innerHTML = "";
+  goals.filter(g=> g !== ex).forEach(g=>{
+    const el = addGoal();
+    if(!el) return;
+    const sel = el.querySelector(".g-field");
+    sel.value = FIELDS.includes(g.field) ? g.field : "기타";
+    el.querySelector(".g-detail").value = g.detail || "";
+    el.querySelector(".count").textContent = Math.max(1, +g.count || 1);
+  });
+  renumber();
+
+  document.getElementById("yearGoal").value = m.yearGoal || "";
+  document.getElementById("message").value = m.message || "";
+
+  editBanner.textContent = "✏️ " + (m.name||"") + " 님의 목표를 수정하고 있어요. 고친 뒤 맨 아래 버튼을 눌러주세요.";
+  editBanner.classList.add("show");
+  submitBtn.textContent = "수정 저장하기";
+  showForm();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
 
 /* ---------- 제출 ---------- */
 const errorBox = document.getElementById("errorBox");
 function fail(msg){ errorBox.textContent = msg; errorBox.classList.add("show");
   errorBox.scrollIntoView({behavior:"smooth", block:"center"}); }
 
-document.getElementById("submitBtn").onclick = async function(){
+submitBtn.onclick = async function(){
   errorBox.classList.remove("show");
   const name = document.getElementById("name").value.trim();
   if(!name) return fail("이름을 입력해주세요.");
-
   const exDetail = document.getElementById("exDetail").value.trim();
   if(!exDetail) return fail("운동 목표 내용을 입력해주세요.");
 
   const goals = [{ field:"운동", detail:exDetail, count:+exCount.textContent }];
-
   for(const g of goalsEl.children){
     const field  = g.querySelector(".g-field").value;
     const detail = g.querySelector(".g-detail").value.trim();
@@ -321,8 +418,8 @@ document.getElementById("submitBtn").onclick = async function(){
     goals.push({field, detail, count});
   }
 
-  const btn = this;
-  btn.disabled = true; btn.textContent = "등록 중...";
+  const isEdit = submitBtn.textContent === "수정 저장하기";
+  submitBtn.disabled = true; submitBtn.textContent = "저장 중...";
   try{
     const res = await fetch(SCRIPT_URL, {
       method:"POST",
@@ -335,11 +432,15 @@ document.getElementById("submitBtn").onclick = async function(){
     });
     const out = await res.json();
     if(out.result !== "ok") throw new Error(out.message || "저장 실패");
-    document.getElementById("formWrap").style.display = "none";
-    document.getElementById("done").classList.add("show");
+    document.getElementById("doneTitle").textContent = isEdit ? "수정 완료!" : "등록 완료!";
+    formView.style.display = "none"; listView.style.display = "none";
+    doneView.classList.add("show");
+    editBanner.classList.remove("show");
+    submitBtn.disabled = false; submitBtn.textContent = "목표 등록하기";
     window.scrollTo(0,0);
   }catch(err){
-    btn.disabled = false; btn.textContent = "목표 등록하기";
+    submitBtn.disabled = false;
+    submitBtn.textContent = isEdit ? "수정 저장하기" : "목표 등록하기";
     fail("전송에 문제가 생겼어요. 잠시 후 다시 시도해주시고, 계속 안 되면 방장(정혜)에게 알려주세요!");
   }
 };
